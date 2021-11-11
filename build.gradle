@@ -1,0 +1,94 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+group 'pl.transport.truck'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def apacheCommonsCodecVersion = '1.15'
+def springBootVersion = '2.5.6'
+def springFrameworkVersion = '5.3.12'
+def spockVersion = '2.0-M5-groovy-3.0'
+def reactorTestVersion = '3.4.12'
+def testcontainersVersion = '1.16.2'
+def reactorNettyVersion = '1.0.13'
+def springSessionDataRedisVersion = '2.5.3'
+def springSecurityVersion = '5.5.3'
+def flywayVersion = '8.0.3'
+def springR2dbcVersion = '1.3.6'
+def r2dbcPoolVersion = '0.9.0.M2'
+def r2dbcPsqlVersion = '0.8.10.RELEASE'
+def postgresVersion = '42.3.1'
+def groovyVersion = '3.0.9'
+def jUnitVersion = '5.8.1'
+def lombokVersion = '1.18.22'
+def slf4jVersion = '1.7.32'
+
+dependencies {
+    implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
+
+    // Lombok
+    implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    testImplementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+
+    // Spring boot
+    implementation group: 'org.springframework', name: 'spring', version: springFrameworkVersion, ext: 'pom'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot', version: springBootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version: springBootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: springBootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: springBootVersion, ext: 'pom'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: springBootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springBootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: springBootVersion
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+
+    // Spring security
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: springBootVersion
+    testImplementation group: 'org.springframework.security', name: 'spring-security-test', version: springSecurityVersion
+
+    // Spring session
+    implementation group: 'org.springframework.session', name: 'spring-session-data-redis', version: springSessionDataRedisVersion
+
+    // R2DBC
+    implementation group: 'org.springframework.data', name: 'spring-data-r2dbc', version: springR2dbcVersion
+    implementation group: 'io.r2dbc', name: 'r2dbc-pool', version: r2dbcPoolVersion
+    implementation group: 'io.r2dbc', name: 'r2dbc-postgresql', version: r2dbcPsqlVersion
+
+    // Flyway
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: flywayVersion
+
+    // Postgres
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresVersion
+
+    // Spock
+    testImplementation group: 'org.spockframework', name: 'spock-core', version: spockVersion
+    testImplementation group: 'org.spockframework', name: 'spock-spring', version: spockVersion
+
+    // Reactor
+    implementation group: 'io.projectreactor.netty', name: 'reactor-netty', version: reactorNettyVersion
+    testImplementation group: 'io.projectreactor', name: 'reactor-test', version: reactorTestVersion
+
+    // Testcontainers
+    implementation platform('org.testcontainers:testcontainers-bom:1.15.1')
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: testcontainersVersion
+
+    // Commons codec
+    implementation group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodecVersion
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
+}
+
+test {
+    useJUnitPlatform()
+}

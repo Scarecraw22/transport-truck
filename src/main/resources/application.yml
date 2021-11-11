@@ -1,0 +1,15 @@
+spring:
+  r2dbc:
+    pool:
+      enabled: true
+      initial-size: 10
+      max-acquire-time: 3s
+      max-size: 20
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  main:
+    banner-mode: OFF
+logging:
+  level:
+    root: info
