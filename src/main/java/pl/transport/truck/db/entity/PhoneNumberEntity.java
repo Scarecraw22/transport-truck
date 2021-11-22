@@ -20,6 +20,6 @@ public class PhoneNumberEntity extends BaseEntity {
     public static final String UPDATED_AT = "updated_at";
     public static final String CREATED_AT = "created_at";
 
-    private String phonePrefix;
-    private String phoneNumber;
+    protected String phonePrefix;
+    protected String phoneNumber;
 }

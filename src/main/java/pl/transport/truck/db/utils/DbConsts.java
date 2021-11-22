@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class DbConsts {
 
+    public final String SCHEMA = "tt";
     public final String R2DBC = "r2dbc";
     public final String JDBC = "jdbc";
 }

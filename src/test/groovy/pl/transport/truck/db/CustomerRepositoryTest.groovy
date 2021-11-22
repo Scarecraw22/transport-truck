@@ -35,7 +35,7 @@ class CustomerRepositoryTest extends DbSpecification {
         then: "Get generated id"
         AtomicLong id = new AtomicLong()
         StepVerifier.create(monoCustomer.log())
-                .assertNext(c -> {
+                .consumeNextWith(c -> {
                     id.set(c.getId())
                 })
                 .verifyComplete()

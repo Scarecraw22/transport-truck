@@ -6,7 +6,7 @@ create table tt.phone_number (
     phone_prefix varchar(3),
     phone_number varchar(15),
     updated_at timestamp with time zone,
-    created_on timestamp with time zone not null,
+    created_at timestamp with time zone not null,
     unique (phone_prefix, phone_number)
 );
 
