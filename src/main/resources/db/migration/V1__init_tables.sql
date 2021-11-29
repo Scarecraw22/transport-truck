@@ -39,8 +39,7 @@ create table tt.job (
     description varchar(255) not null,
     source_address varchar(100) not null,
     destination_address varchar(100) not null,
-    destination_phone_number_id bigserial not null,
-    destination_email varchar(50) not null,
+    destination_email varchar(50),
     updated_at timestamp with time zone,
     created_at timestamp with time zone not null,
     constraint fk_customer foreign key (customer_id) references tt.customer(id)
@@ -62,11 +61,9 @@ create table tt.driver (
     first_name varchar(50) not null,
     last_name varchar(50) not null,
     address varchar(100),
-    phone_number_id bigserial not null,
     email varchar(50) not null,
     updated_at timestamp with time zone,
-    created_at timestamp with time zone not null,
-    constraint fk_phone_number foreign key (phone_number_id) references tt.phone_number(id)
+    created_at timestamp with time zone not null
 );
 
 drop table if exists tt.driver_phone_number;

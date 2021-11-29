@@ -12,9 +12,15 @@ spring:
     banner-mode: OFF
 logging:
   level:
-    root: info
+    ROOT: DEBUG
+  io:
+    r2dbc:
+      postgresql:
+        QUERY: DEBUG
+        PARAM: DEBUG
 
 pl:
   transport:
     truck:
       database-type: PSQL
+      fixed-clock: true

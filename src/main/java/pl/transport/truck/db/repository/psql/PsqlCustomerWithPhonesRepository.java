@@ -1,4 +1,4 @@
-package pl.transport.truck.db.repository;
+package pl.transport.truck.db.repository.psql;
 
 import io.r2dbc.spi.Row;
 import lombok.EqualsAndHashCode;
@@ -12,24 +12,22 @@ import pl.transport.truck.db.entity.CustomerEntity;
 import pl.transport.truck.db.entity.CustomerWithPhonesEntity;
 import pl.transport.truck.db.entity.PhoneNumberEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
+import pl.transport.truck.db.repository.CustomerWithPhonesRepository;
+import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
 import pl.transport.truck.db.utils.DbConsts;
+import pl.transport.truck.utils.AbstractSetCollector;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Repository
+@ConditionalOnPsqlDb
 @RequiredArgsConstructor
-public class CustomerWithPhoneNumberRepository {
+public class PsqlCustomerWithPhonesRepository implements CustomerWithPhonesRepository {
 
     private static final String CUSTOMER_PREFIX = "customer_";
     private static final String PHONE_NUMBER_PREFIX = "phone_number_";
@@ -37,6 +35,7 @@ public class CustomerWithPhoneNumberRepository {
     private final DatabaseClient databaseClient;
     private final StringQueryBuilderFactory queryFactory;
 
+    @Override
     public Mono<CustomerWithPhonesEntity> getCustomerWithPhones(Long customerId) {
 
         String sql = queryFactory.create()
@@ -69,28 +68,10 @@ public class CustomerWithPhoneNumberRepository {
                 .collect(CustomerWithPhoneNumberCollector.getInstance());
     }
 
-    private static class CustomerWithPhoneNumberCollector implements Collector<CustomerWithSinglePhone, Set<CustomerWithSinglePhone>, CustomerWithPhonesEntity> {
+    private static class CustomerWithPhoneNumberCollector extends AbstractSetCollector<CustomerWithSinglePhone, CustomerWithPhonesEntity> {
 
         public static CustomerWithPhoneNumberCollector getInstance() {
             return new CustomerWithPhoneNumberCollector();
-        }
-
-        @Override
-        public Supplier<Set<CustomerWithSinglePhone>> supplier() {
-            return HashSet::new;
-        }
-
-        @Override
-        public BiConsumer<Set<CustomerWithSinglePhone>, CustomerWithSinglePhone> accumulator() {
-            return Set::add;
-        }
-
-        @Override
-        public BinaryOperator<Set<CustomerWithSinglePhone>> combiner() {
-            return (left, right) -> {
-                left.addAll(right);
-                return left;
-            };
         }
 
         @Override
@@ -122,11 +103,6 @@ public class CustomerWithPhoneNumberRepository {
                             .build();
                 }
             };
-        }
-
-        @Override
-        public Set<Characteristics> characteristics() {
-            return Collections.emptySet();
         }
     }
 

@@ -13,12 +13,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("tt.phone_number")
 public class PhoneNumberEntity extends BaseEntity {
 
-    public static final String PREFIX = "pn.";
-
     public static final String PHONE_PREFIX = "phone_prefix";
     public static final String PHONE_NUMBER = "phone_number";
-    public static final String UPDATED_AT = "updated_at";
-    public static final String CREATED_AT = "created_at";
 
     protected String phonePrefix;
     protected String phoneNumber;

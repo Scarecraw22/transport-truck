@@ -1,28 +1,25 @@
 package pl.transport.truck.db
 
 import org.springframework.beans.factory.annotation.Autowired
-import pl.transport.truck.db.entity.CustomerEntity
-import pl.transport.truck.db.repository.CustomerRepository
+import pl.transport.truck.datetime.utils.DateTimeConsts
+import pl.transport.truck.db.entity.DriverEntity
+import pl.transport.truck.db.repository.DriverRepository
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-import java.time.Clock
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.atomic.AtomicLong
 
-class CustomerRepositoryTest extends DbSpecification {
+class DriverRepositoryTest extends DbSpecification {
 
     @Autowired
-    private CustomerRepository customerRepository
+    private DriverRepository driverRepository
 
-    @Autowired
-    private Clock clock
-
-    def "test if CustomerEntity is properly saved and retrieved"() {
+    def "test if DriverEntity is properly saved and retrieved"() {
         given:
-        LocalDateTime now = LocalDateTime.now(clock)
-        CustomerEntity customer = CustomerEntity.builder()
+        LocalDateTime now = LocalDateTime.now(DateTimeConsts.EUROPE_WARSAW_ZONE)
+        DriverEntity driver = DriverEntity.builder()
                 .password("password")
                 .firstName("f1")
                 .lastName("l1")
@@ -32,22 +29,22 @@ class CustomerRepositoryTest extends DbSpecification {
                 .createdAt(now)
                 .build()
 
-        when: "Customer is saved"
-        Mono<CustomerEntity> monoCustomer = customerRepository.save(customer)
+        when: "Driver is saved"
+        Mono<DriverEntity> monoDriver = driverRepository.save(driver)
 
         then: "Get generated id"
         AtomicLong id = new AtomicLong()
-        StepVerifier.create(monoCustomer.log())
+        StepVerifier.create(monoDriver.log())
                 .consumeNextWith(c -> {
                     id.set(c.getId())
                 })
                 .verifyComplete()
 
         when: "User is retrieved from db"
-        Mono<CustomerEntity> customerFromDb = customerRepository.findById(id.get())
+        Mono<DriverEntity> driverFromDb = driverRepository.findById(id.get())
 
         then: "Check if all fields are properly set"
-        StepVerifier.create(customerFromDb.log())
+        StepVerifier.create(driverFromDb.log())
                 .assertNext(c -> {
                     assert c.getId() == id.get()
                     assert c.getPassword() == "password"

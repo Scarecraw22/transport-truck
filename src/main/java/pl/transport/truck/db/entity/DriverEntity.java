@@ -12,11 +12,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"password"})
 @ToString(callSuper = true, exclude = {"password"})
-@Table("tt.customer")
-public class CustomerEntity extends BaseEntity {
+@Table("tt.driver")
+public class DriverEntity extends BaseEntity {
 
-    public static final String TABLE_NAME = "customer";
-    public static final String PREFIX = "c.";
+    public static final String TABLE_NAME = "driver";
+    public static final String PREFIX = "d.";
     public static final String FIRST_NAME = "first_name";
     public static final String LAST_NAME = "last_name";
     public static final String ADDRESS = "address";

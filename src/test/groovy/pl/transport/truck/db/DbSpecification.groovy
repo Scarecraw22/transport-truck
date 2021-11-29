@@ -5,6 +5,7 @@ import org.flywaydb.core.Flyway
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringRunner
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(initializers = [DbIntegrationTestInitializer.class])
+@ActiveProfiles(["test"])
 abstract class DbSpecification extends Specification {
 
     private static AtomicBoolean migrated = new AtomicBoolean(false)
