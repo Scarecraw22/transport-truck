@@ -31,6 +31,7 @@ class PsqlDriverDetailsRepositoryTest extends RepositorySpecification {
         given:
         DriverEntity driver = DriverEntity.builder()
                 .password("password")
+                .salt("salt")
                 .firstName("f1")
                 .lastName("l1")
                 .address("a1")

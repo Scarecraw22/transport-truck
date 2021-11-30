@@ -7,8 +7,8 @@ import pl.transport.truck.db.entity.CustomerPhoneEntity
 import pl.transport.truck.db.entity.PhoneNumberEntity
 import pl.transport.truck.db.repository.CustomerRepository
 import pl.transport.truck.db.repository.PhoneNumberRepository
-import pl.transport.truck.db.repository.PsqlCustomerDetailsRepository
-import pl.transport.truck.db.repository.PsqlCustomerPhoneRepository
+import pl.transport.truck.db.repository.CustomerDetailsRepository
+import pl.transport.truck.db.repository.CustomerPhoneRepository
 import pl.transport.truck.specification.RepositorySpecification
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -24,15 +24,16 @@ class PsqlCustomerDetailsRepositoryTest extends RepositorySpecification {
     private PhoneNumberRepository phoneNumberRepository
 
     @Autowired
-    private PsqlCustomerPhoneRepository customerPhoneRepository
+    private CustomerPhoneRepository customerPhoneRepository
 
     @Autowired
-    private PsqlCustomerDetailsRepository customerDetailsRepository
+    private CustomerDetailsRepository customerDetailsRepository
 
     def "test if Customer with PhoneNumber is properly retrieved"() {
         given:
         CustomerEntity customer = CustomerEntity.builder()
                 .password("password")
+                .salt("salt")
                 .firstName("f1")
                 .lastName("l1")
                 .address("a1")

@@ -32,6 +32,7 @@ class PsqlJobPhoneRepositoryTest extends RepositorySpecification {
         given:
         CustomerEntity customer = CustomerEntity.builder()
                 .password("password")
+                .salt("salt")
                 .firstName("f1")
                 .lastName("l1")
                 .address("a1")

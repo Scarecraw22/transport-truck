@@ -14,6 +14,7 @@ drop table if exists tt.customer;
 create table tt.customer (
     id bigserial primary key,
     password varchar(255) not null,
+    salt text not null,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
     address varchar(100),
@@ -58,6 +59,7 @@ drop table if exists tt.driver;
 create table tt.driver (
     id bigserial primary key,
     password varchar(255) not null,
+    salt text not null,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
     address varchar(100),
@@ -104,13 +106,3 @@ drop table if exists tt.salt;
 create table tt.salt (
     hash text
 );
-
-insert into tt.salt values (md5('12comm@())D(1313U4fz___cc+-#)$!!!sjaw390'));
-
-create function forbid_salt_update() returns trigger as $forbid_salt_update$
-    begin
-        RAISE EXCEPTION 'Salt update is not allowed';
-    end;
-$forbid_salt_update$ language plpgsql;
-create trigger forbid_salt_update before insert or update on tt.salt
-    for each row execute procedure forbid_salt_update();

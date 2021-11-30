@@ -18,6 +18,7 @@ class DriverRepositoryTest extends RepositorySpecification {
         given:
         DriverEntity driver = DriverEntity.builder()
                 .password("password")
+                .salt("salt")
                 .firstName("f1")
                 .lastName("l1")
                 .address("a1")
@@ -45,6 +46,7 @@ class DriverRepositoryTest extends RepositorySpecification {
                 .assertNext(c -> {
                     assert c.getId() == id.get()
                     assert c.getPassword() == "password"
+                    assert c.getSalt() == "salt"
                     assert c.getFirstName() == "f1"
                     assert c.getAddress() == "a1"
                     assert c.getUpdatedAt().isEqual(now)

@@ -12,6 +12,7 @@ import pl.transport.truck.db.entity.CustomerDetailsEntity;
 import pl.transport.truck.db.entity.CustomerEntity;
 import pl.transport.truck.db.entity.PhoneNumberEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
+import pl.transport.truck.db.repository.CustomerDetailsRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
 import pl.transport.truck.db.utils.DbConsts;
 import pl.transport.truck.utils.AbstractSetCollector;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @Repository
 @ConditionalOnPsqlDb
 @RequiredArgsConstructor
-public class PsqlCustomerDetailsRepository implements pl.transport.truck.db.repository.PsqlCustomerDetailsRepository {
+public class PsqlCustomerDetailsRepository implements CustomerDetailsRepository {
 
     private static final String CUSTOMER_PREFIX = "customer_";
     private static final String PHONE_NUMBER_PREFIX = "phone_number_";
@@ -82,7 +83,6 @@ public class PsqlCustomerDetailsRepository implements pl.transport.truck.db.repo
                     CustomerWithSinglePhone customerWithSinglePhone = List.copyOf(set).get(0);
                     return CustomerDetailsEntity.builder()
                             .id(customerWithSinglePhone.getId())
-                            .password(customerWithSinglePhone.getPassword())
                             .firstName(customerWithSinglePhone.getFirstName())
                             .lastName(customerWithSinglePhone.getLastName())
                             .address(customerWithSinglePhone.getAddress())

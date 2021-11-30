@@ -10,8 +10,8 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @SuperBuilder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"password"})
-@ToString(callSuper = true, exclude = {"password"})
+@EqualsAndHashCode(callSuper = true, exclude = {"password", "salt"})
+@ToString(callSuper = true, exclude = {"password", "salt"})
 @Table("tt.customer")
 public class CustomerEntity extends BaseEntity {
 
@@ -22,8 +22,10 @@ public class CustomerEntity extends BaseEntity {
     public static final String ADDRESS = "address";
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
+    public static final String SALT = "salt";
 
     protected String password;
+    protected String salt;
     protected String firstName;
     protected String lastName;
     protected String address;

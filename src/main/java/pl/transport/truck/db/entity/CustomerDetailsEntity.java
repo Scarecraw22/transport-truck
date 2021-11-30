@@ -11,7 +11,11 @@ import java.util.Set;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class CustomerDetailsEntity extends CustomerEntity {
+public class CustomerDetailsEntity extends BaseEntity {
 
+    protected String firstName;
+    protected String lastName;
+    protected String address;
+    protected String email;
     private Set<PhoneNumberEntity> phoneNumbers;
 }
