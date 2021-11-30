@@ -1,4 +1,4 @@
-package pl.transport.truck.db
+package pl.transport.truck.specification
 
 import groovy.util.logging.Slf4j
 import org.flywaydb.core.Flyway

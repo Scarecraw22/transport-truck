@@ -12,7 +12,7 @@ spring:
     banner-mode: OFF
 logging:
   level:
-    ROOT: DEBUG
+    ROOT: INFO
   io:
     r2dbc:
       postgresql:

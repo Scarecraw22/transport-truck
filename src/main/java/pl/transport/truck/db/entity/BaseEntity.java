@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @SuperBuilder
@@ -18,6 +18,6 @@ public abstract class BaseEntity {
 
     @Id
     protected Long id;
-    protected LocalDateTime createdAt;
-    protected LocalDateTime updatedAt;
+    protected ZonedDateTime createdAt;
+    protected ZonedDateTime updatedAt;
 }

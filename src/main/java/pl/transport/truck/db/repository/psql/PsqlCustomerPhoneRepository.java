@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import pl.transport.truck.db.converter.CustomerPhoneReadingConverter;
 import pl.transport.truck.db.entity.CustomerPhoneEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
-import pl.transport.truck.db.repository.CustomerPhoneRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
 import pl.transport.truck.db.utils.DbConsts;
 import reactor.core.publisher.Mono;
@@ -16,7 +15,7 @@ import java.util.List;
 @Repository
 @ConditionalOnPsqlDb
 @RequiredArgsConstructor
-public class PsqlCustomerPhoneRepository implements CustomerPhoneRepository {
+public class PsqlCustomerPhoneRepository implements pl.transport.truck.db.repository.PsqlCustomerPhoneRepository {
 
     private final DatabaseClient databaseClient;
     private final CustomerPhoneReadingConverter customerPhoneReadingConverter;
@@ -33,4 +32,16 @@ public class PsqlCustomerPhoneRepository implements CustomerPhoneRepository {
                 .one();
     }
 
+    @Override
+    public Mono<CustomerPhoneEntity> delete(CustomerPhoneEntity entity) {
+        return databaseClient.sql(queryFactory.create()
+                        .deleteFrom(DbConsts.SCHEMA, CustomerPhoneEntity.TABLE_NAME)
+                        .where("customer_id = :customerId AND phone_number_id = :phoneNumberId")
+                        .returningAll()
+                        .build())
+                .bind("customerId", entity.getCustomerId())
+                .bind("phoneNumberId", entity.getPhoneNumberId())
+                .map(customerPhoneReadingConverter::convert)
+                .one();
+    }
 }

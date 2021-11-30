@@ -11,7 +11,7 @@ import java.util.Set;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class DriverWithPhonesEntity extends DriverEntity {
+public class DriverDetailsEntity extends DriverEntity {
 
     private Set<PhoneNumberEntity> phoneNumbers;
 }

@@ -1,22 +1,21 @@
-package pl.transport.truck.db
+package pl.transport.truck.db.repository.psql
 
 import org.springframework.beans.factory.annotation.Autowired
-import pl.transport.truck.datetime.utils.DateTimeConsts
+import pl.transport.truck.db.entity.CustomerDetailsEntity
 import pl.transport.truck.db.entity.CustomerEntity
 import pl.transport.truck.db.entity.CustomerPhoneEntity
-import pl.transport.truck.db.entity.CustomerWithPhonesEntity
 import pl.transport.truck.db.entity.PhoneNumberEntity
-import pl.transport.truck.db.repository.CustomerPhoneRepository
 import pl.transport.truck.db.repository.CustomerRepository
-import pl.transport.truck.db.repository.CustomerWithPhonesRepository
 import pl.transport.truck.db.repository.PhoneNumberRepository
+import pl.transport.truck.db.repository.PsqlCustomerDetailsRepository
+import pl.transport.truck.db.repository.PsqlCustomerPhoneRepository
+import pl.transport.truck.specification.RepositorySpecification
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
-class PsqlCustomerWithPhonesRepositoryTest extends DbSpecification {
+class PsqlCustomerDetailsRepositoryTest extends RepositorySpecification {
 
     @Autowired
     private CustomerRepository customerRepository
@@ -25,14 +24,13 @@ class PsqlCustomerWithPhonesRepositoryTest extends DbSpecification {
     private PhoneNumberRepository phoneNumberRepository
 
     @Autowired
-    private CustomerPhoneRepository customerPhoneRepository
+    private PsqlCustomerPhoneRepository customerPhoneRepository
 
     @Autowired
-    private CustomerWithPhonesRepository customerWithPhoneNumberRepository
+    private PsqlCustomerDetailsRepository customerDetailsRepository
 
     def "test if Customer with PhoneNumber is properly retrieved"() {
         given:
-        LocalDateTime now = LocalDateTime.now(DateTimeConsts.EUROPE_WARSAW_ZONE)
         CustomerEntity customer = CustomerEntity.builder()
                 .password("password")
                 .firstName("f1")
@@ -70,7 +68,7 @@ class PsqlCustomerWithPhonesRepositoryTest extends DbSpecification {
                 .verifyComplete()
 
         and: "Customer with phone number is retrieved"
-        Mono<CustomerWithPhonesEntity> customerWithPhones = customerWithPhoneNumberRepository.getCustomerWithPhones(customerId.get())
+        Mono<CustomerDetailsEntity> customerWithPhones = customerDetailsRepository.getCustomerDetails(customerId.get())
 
         then:
         StepVerifier.create(customerWithPhones.log())
@@ -91,6 +89,17 @@ class PsqlCustomerWithPhonesRepositoryTest extends DbSpecification {
                         assert pn.getUpdatedAt() != null
                     })
                 })
+                .verifyComplete()
+
+        cleanup:
+        StepVerifier.create(customerPhoneRepository.delete(customerPhoneEntity).log())
+                .expectNextCount(1)
+                .verifyComplete()
+        StepVerifier.create(phoneNumberRepository.deleteById(phoneNumberId.get()).log())
+                .expectNextCount(0)
+                .verifyComplete()
+        StepVerifier.create(customerRepository.deleteById(customerId.get()).log())
+                .expectNextCount(0)
                 .verifyComplete()
     }
 }

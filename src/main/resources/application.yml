@@ -12,7 +12,7 @@ spring:
     banner-mode: OFF
 logging:
   level:
-    root: info
+    root: INFO
 
 pl:
   transport:

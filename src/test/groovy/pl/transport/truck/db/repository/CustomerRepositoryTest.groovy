@@ -1,27 +1,21 @@
-package pl.transport.truck.db
+package pl.transport.truck.db.repository
 
 import org.springframework.beans.factory.annotation.Autowired
 import pl.transport.truck.db.entity.CustomerEntity
 import pl.transport.truck.db.repository.CustomerRepository
+import pl.transport.truck.specification.RepositorySpecification
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-import java.time.Clock
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.atomic.AtomicLong
 
-class CustomerRepositoryTest extends DbSpecification {
+class CustomerRepositoryTest extends RepositorySpecification {
 
     @Autowired
     private CustomerRepository customerRepository
 
-    @Autowired
-    private Clock clock
-
     def "test if CustomerEntity is properly saved and retrieved"() {
         given:
-        LocalDateTime now = LocalDateTime.now(clock)
         CustomerEntity customer = CustomerEntity.builder()
                 .password("password")
                 .firstName("f1")
@@ -53,8 +47,13 @@ class CustomerRepositoryTest extends DbSpecification {
                     assert c.getPassword() == "password"
                     assert c.getFirstName() == "f1"
                     assert c.getAddress() == "a1"
-                    assert c.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS).isEqual(now.truncatedTo(ChronoUnit.SECONDS))
-                    assert c.getCreatedAt().truncatedTo(ChronoUnit.SECONDS).isEqual(now.truncatedTo(ChronoUnit.SECONDS))
+                    assert c.getUpdatedAt().isEqual(now)
+                    assert c.getCreatedAt().isEqual(now)
                 })
+
+        cleanup:
+        StepVerifier.create(customerRepository.deleteById(id.get()).log())
+                .expectNextCount(0)
+                .verifyComplete()
     }
 }

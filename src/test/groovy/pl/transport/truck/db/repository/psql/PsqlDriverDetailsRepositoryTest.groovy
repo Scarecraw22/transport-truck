@@ -1,22 +1,19 @@
-package pl.transport.truck.db
+package pl.transport.truck.db.repository.psql
 
 import org.springframework.beans.factory.annotation.Autowired
-import pl.transport.truck.datetime.utils.DateTimeConsts
+import pl.transport.truck.db.entity.DriverDetailsEntity
 import pl.transport.truck.db.entity.DriverEntity
 import pl.transport.truck.db.entity.DriverPhoneEntity
-import pl.transport.truck.db.entity.DriverWithPhonesEntity
 import pl.transport.truck.db.entity.PhoneNumberEntity
-import pl.transport.truck.db.repository.DriverPhoneRepository
 import pl.transport.truck.db.repository.DriverRepository
-import pl.transport.truck.db.repository.DriverWithPhonesRepository
 import pl.transport.truck.db.repository.PhoneNumberRepository
+import pl.transport.truck.specification.RepositorySpecification
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
-import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
-class PsqlDriverWithPhonesRepositoryTest extends DbSpecification {
+class PsqlDriverDetailsRepositoryTest extends RepositorySpecification {
 
     @Autowired
     private DriverRepository driverRepository
@@ -25,14 +22,13 @@ class PsqlDriverWithPhonesRepositoryTest extends DbSpecification {
     private PhoneNumberRepository phoneNumberRepository
 
     @Autowired
-    private DriverPhoneRepository driverPhoneRepository
+    private PsqlDriverPhoneRepository driverPhoneRepository
 
     @Autowired
-    private DriverWithPhonesRepository driverWithPhoneNumberRepository
+    private PsqlDriverDetailsRepository driverDetailsRepository
 
     def "test if Customer with PhoneNumber is properly retrieved"() {
         given:
-        LocalDateTime now = LocalDateTime.now(DateTimeConsts.EUROPE_WARSAW_ZONE)
         DriverEntity driver = DriverEntity.builder()
                 .password("password")
                 .firstName("f1")
@@ -70,7 +66,7 @@ class PsqlDriverWithPhonesRepositoryTest extends DbSpecification {
                 .verifyComplete()
 
         and: "Driver with phone number is retrieved"
-        Mono<DriverWithPhonesEntity> driverWithPhones = driverWithPhoneNumberRepository.getCustomerWithPhones(driverId.get())
+        Mono<DriverDetailsEntity> driverWithPhones = driverDetailsRepository.getCustomerDetails(driverId.get())
 
         then:
         StepVerifier.create(driverWithPhones.log())
@@ -91,6 +87,17 @@ class PsqlDriverWithPhonesRepositoryTest extends DbSpecification {
                         assert pn.getUpdatedAt() != null
                     })
                 })
+                .verifyComplete()
+
+        cleanup:
+        StepVerifier.create(driverPhoneRepository.delete(driverPhoneEntity).log())
+                .expectNextCount(1)
+                .verifyComplete()
+        StepVerifier.create(phoneNumberRepository.deleteById(phoneNumberId.get()).log())
+                .expectNextCount(0)
+                .verifyComplete()
+        StepVerifier.create(driverRepository.deleteById(driverId.get()).log())
+                .expectNextCount(0)
                 .verifyComplete()
     }
 }

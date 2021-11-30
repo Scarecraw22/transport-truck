@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import pl.transport.truck.db.config.properties.SpringFlywayProperties;
-import pl.transport.truck.db.converter.*;
+import pl.transport.truck.db.converter.CustomerReadingConverter;
+import pl.transport.truck.db.converter.PhoneNumberReadingConverter;
 import pl.transport.truck.db.query.PsqlStringQueryBuilderFactory;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.utils.DbConsts;
@@ -49,10 +50,10 @@ public class DbConfig extends AbstractR2dbcConfiguration {
     public List<Object> getCustomConverters() {
         return List.of(
                 new PhoneNumberReadingConverter(),
-                new CustomerReadingConverter(),
-                new CustomerWritingConverter(),
-                new PhoneNumberWritingConverter(),
-                new CustomerPhoneWritingConverter()
+                new CustomerReadingConverter()
+//                new CustomerWritingConverter(),
+//                new PhoneNumberWritingConverter(),
+//                new CustomerPhoneWritingConverter()
         );
     }
 

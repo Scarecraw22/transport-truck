@@ -33,4 +33,16 @@ public class PsqlDriverPhoneRepository implements DriverPhoneRepository {
                 .one();
     }
 
+    @Override
+    public Mono<DriverPhoneEntity> delete(DriverPhoneEntity entity) {
+        return databaseClient.sql(queryFactory.create()
+                        .deleteFrom(DbConsts.SCHEMA, DriverPhoneEntity.TABLE_NAME)
+                        .where("driver_id = :driverId AND phone_number_id = :phoneNumberId")
+                        .returningAll()
+                        .build())
+                .bind("driverId", entity.getDriverId())
+                .bind("phoneNumberId", entity.getPhoneNumberId())
+                .map(driverPhoneReadingConverter::convert)
+                .one();
+    }
 }

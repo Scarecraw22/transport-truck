@@ -8,17 +8,16 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import pl.transport.truck.db.entity.BaseEntity;
+import pl.transport.truck.db.entity.CustomerDetailsEntity;
 import pl.transport.truck.db.entity.CustomerEntity;
-import pl.transport.truck.db.entity.CustomerWithPhonesEntity;
 import pl.transport.truck.db.entity.PhoneNumberEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
-import pl.transport.truck.db.repository.CustomerWithPhonesRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
 import pl.transport.truck.db.utils.DbConsts;
 import pl.transport.truck.utils.AbstractSetCollector;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 @Repository
 @ConditionalOnPsqlDb
 @RequiredArgsConstructor
-public class PsqlCustomerWithPhonesRepository implements CustomerWithPhonesRepository {
+public class PsqlCustomerDetailsRepository implements pl.transport.truck.db.repository.PsqlCustomerDetailsRepository {
 
     private static final String CUSTOMER_PREFIX = "customer_";
     private static final String PHONE_NUMBER_PREFIX = "phone_number_";
@@ -36,7 +35,7 @@ public class PsqlCustomerWithPhonesRepository implements CustomerWithPhonesRepos
     private final StringQueryBuilderFactory queryFactory;
 
     @Override
-    public Mono<CustomerWithPhonesEntity> getCustomerWithPhones(Long customerId) {
+    public Mono<CustomerDetailsEntity> getCustomerDetails(Long customerId) {
 
         String sql = queryFactory.create()
                 .select(List.of(
@@ -68,20 +67,20 @@ public class PsqlCustomerWithPhonesRepository implements CustomerWithPhonesRepos
                 .collect(CustomerWithPhoneNumberCollector.getInstance());
     }
 
-    private static class CustomerWithPhoneNumberCollector extends AbstractSetCollector<CustomerWithSinglePhone, CustomerWithPhonesEntity> {
+    private static class CustomerWithPhoneNumberCollector extends AbstractSetCollector<CustomerWithSinglePhone, CustomerDetailsEntity> {
 
         public static CustomerWithPhoneNumberCollector getInstance() {
             return new CustomerWithPhoneNumberCollector();
         }
 
         @Override
-        public Function<Set<CustomerWithSinglePhone>, CustomerWithPhonesEntity> finisher() {
+        public Function<Set<CustomerWithSinglePhone>, CustomerDetailsEntity> finisher() {
             return set -> {
                 if (set.isEmpty()) {
-                    return CustomerWithPhonesEntity.builder().build();
+                    return CustomerDetailsEntity.builder().build();
                 } else {
                     CustomerWithSinglePhone customerWithSinglePhone = List.copyOf(set).get(0);
-                    return CustomerWithPhonesEntity.builder()
+                    return CustomerDetailsEntity.builder()
                             .id(customerWithSinglePhone.getId())
                             .password(customerWithSinglePhone.getPassword())
                             .firstName(customerWithSinglePhone.getFirstName())
@@ -120,14 +119,14 @@ public class PsqlCustomerWithPhonesRepository implements CustomerWithPhonesRepos
                     .lastName(row.get(CustomerEntity.LAST_NAME, String.class))
                     .address(row.get(CustomerEntity.ADDRESS, String.class))
                     .email(row.get(CustomerEntity.EMAIL, String.class))
-                    .createdAt(row.get(CUSTOMER_PREFIX + BaseEntity.CREATED_AT, LocalDateTime.class))
-                    .updatedAt(row.get(CUSTOMER_PREFIX + BaseEntity.UPDATED_AT, LocalDateTime.class))
+                    .createdAt(row.get(CUSTOMER_PREFIX + BaseEntity.CREATED_AT, ZonedDateTime.class))
+                    .updatedAt(row.get(CUSTOMER_PREFIX + BaseEntity.UPDATED_AT, ZonedDateTime.class))
                     .phone(PhoneNumberEntity.builder()
                             .id(row.get(PHONE_NUMBER_PREFIX + BaseEntity.ID, Long.class))
                             .phonePrefix(row.get(PhoneNumberEntity.PHONE_PREFIX, String.class))
                             .phoneNumber(row.get(PhoneNumberEntity.PHONE_NUMBER, String.class))
-                            .createdAt(row.get(PHONE_NUMBER_PREFIX + BaseEntity.CREATED_AT, LocalDateTime.class))
-                            .updatedAt(row.get(PHONE_NUMBER_PREFIX + BaseEntity.UPDATED_AT, LocalDateTime.class))
+                            .createdAt(row.get(PHONE_NUMBER_PREFIX + BaseEntity.CREATED_AT, ZonedDateTime.class))
+                            .updatedAt(row.get(PHONE_NUMBER_PREFIX + BaseEntity.UPDATED_AT, ZonedDateTime.class))
                             .build())
                     .build();
         }
