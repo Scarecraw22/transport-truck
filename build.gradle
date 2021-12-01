@@ -11,6 +11,7 @@ repositories {
 }
 
 def apacheCommonsCodecVersion = '1.15'
+def apacheCommonsLangVersion = '3.12.0'
 def springBootVersion = '2.5.6'
 def springFrameworkVersion = '5.3.12'
 def spockVersion = '2.0-M5-groovy-3.0'
@@ -82,6 +83,7 @@ dependencies {
 
     // Commons codec
     implementation group: 'commons-codec', name: 'commons-codec', version: apacheCommonsCodecVersion
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: apacheCommonsLangVersion
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
 
