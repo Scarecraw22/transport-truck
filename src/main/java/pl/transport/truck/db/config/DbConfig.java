@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import pl.transport.truck.db.config.properties.SpringFlywayProperties;
@@ -37,7 +38,6 @@ public class DbConfig extends AbstractR2dbcConfiguration {
 
         if (springFlywayProperties.isEnabled()) {
             return new Flyway(Flyway.configure()
-                    .baselineOnMigrate(true)
                     .dataSource(r2dbcProperties.getUrl().replace(DbConsts.R2DBC, DbConsts.JDBC), r2dbcProperties.getUsername(), r2dbcProperties.getPassword()));
         } else {
             log.warn("Flyway is disabled");
@@ -51,9 +51,6 @@ public class DbConfig extends AbstractR2dbcConfiguration {
         return List.of(
                 new PhoneNumberReadingConverter(),
                 new CustomerReadingConverter()
-//                new CustomerWritingConverter(),
-//                new PhoneNumberWritingConverter(),
-//                new CustomerPhoneWritingConverter()
         );
     }
 

@@ -19,7 +19,10 @@ public class DbIntegrationTestInitializer implements ApplicationContextInitializ
                 "spring.r2dbc.url=" + postgresqlTestContainer.getJdbcUrl().replace(DbConsts.JDBC, DbConsts.R2DBC),
                 "spring.r2dbc.username=" + postgresqlTestContainer.getUsername(),
                 "spring.r2dbc.password=" + postgresqlTestContainer.getPassword(),
-                "spring.jpa.show-sql=true"
+                "spring.jpa.show-sql=true",
+                "spring.flyway.url=" + postgresqlTestContainer.getJdbcUrl(),
+                "spring.flyway.user=" + postgresqlTestContainer.getUsername(),
+                "spring.flyway.password=" + postgresqlTestContainer.getPassword()
         );
 
         testPropertyValues.and(defaultProperties());
