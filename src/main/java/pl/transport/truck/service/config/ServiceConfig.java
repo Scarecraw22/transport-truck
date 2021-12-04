@@ -24,9 +24,9 @@ public class ServiceConfig {
         return new PBKDF2PasswordHasher(pepperProvider);
     }
 
-    @Bean
-    public CustomerService customerService(CustomerEntityManager customerEntityManager,
-                                           CustomerModelConverter customerModelConverter) {
-        return new CustomerServiceImpl(customerEntityManager, customerModelConverter);
-    }
+//    @Bean
+//    public CustomerService customerService(CustomerEntityManager customerEntityManager,
+//                                           CustomerModelConverter customerModelConverter) {
+//        return new CustomerServiceImpl(customerEntityManager, customerModelConverter);
+//    }
 }

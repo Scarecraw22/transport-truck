@@ -92,5 +92,6 @@ class CustomerControllerTest extends Specification {
                 .assertNext(next -> {
                     assert next.getId() == newCustomerId.get()
                 })
+                .verifyComplete()
     }
 }
