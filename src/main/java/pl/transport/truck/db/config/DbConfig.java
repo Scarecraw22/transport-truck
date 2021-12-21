@@ -10,11 +10,10 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import pl.transport.truck.db.config.properties.SpringFlywayProperties;
-import pl.transport.truck.db.converter.CustomerReadingConverter;
+import pl.transport.truck.db.converter.UserReadingConverter;
 import pl.transport.truck.db.converter.PhoneNumberReadingConverter;
 import pl.transport.truck.db.query.PsqlStringQueryBuilderFactory;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
@@ -50,7 +49,7 @@ public class DbConfig extends AbstractR2dbcConfiguration {
     public List<Object> getCustomConverters() {
         return List.of(
                 new PhoneNumberReadingConverter(),
-                new CustomerReadingConverter()
+                new UserReadingConverter()
         );
     }
 

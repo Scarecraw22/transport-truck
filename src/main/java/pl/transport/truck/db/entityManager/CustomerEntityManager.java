@@ -1,10 +1,10 @@
 package pl.transport.truck.db.entityManager;
 
-import pl.transport.truck.db.entity.CustomerDetailsEntity;
-import pl.transport.truck.db.entity.CustomerEntity;
+import pl.transport.truck.db.entity.UserDetailsEntity;
+import pl.transport.truck.db.entity.UserEntity;
 import reactor.core.publisher.Mono;
 
-public interface CustomerEntityManager extends BaseEntityManager<CustomerEntity> {
+public interface CustomerEntityManager extends BaseEntityManager<UserEntity> {
 
-    Mono<CustomerDetailsEntity> getCustomerDetails(Long customerId);
+    Mono<UserDetailsEntity> getCustomerDetails(Long customerId);
 }

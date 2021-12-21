@@ -1,13 +1,15 @@
 package pl.transport.truck.service.password
 
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder
 import pl.transport.truck.service.md5.Md5Service
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class PasswordServiceImplTest extends Specification {
 
-    private final PasswordHasher passwordHasher = new PBKDF2PasswordHasher(() -> "pepper")
-    private final PasswordService passwordService = new PasswordServiceImpl(passwordHasher, new Md5Service())
+    private final PasswordEncoder passwordEncoder = new Pbkdf2PasswordEncoder("secret")
+    private final PasswordService passwordService = new PasswordServiceImpl(passwordEncoder, new Md5Service())
 
     @Unroll
     def "#input password is properly encoded"() {

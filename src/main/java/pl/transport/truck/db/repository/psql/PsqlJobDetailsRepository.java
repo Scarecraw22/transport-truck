@@ -28,7 +28,7 @@ public class PsqlJobDetailsRepository implements JobDetailsRepository {
 
     private static final String JOB_PREFIX = "job_";
     private static final String PHONE_NUMBER_PREFIX = "phone_number_";
-    private static final String CUSTOMER_PREFIX = "customer_";
+    private static final String USER_PREFIX = "user_";
 
     private final DatabaseClient databaseClient;
     private final StringQueryBuilderFactory queryFactory;
@@ -51,22 +51,24 @@ public class PsqlJobDetailsRepository implements JobDetailsRepository {
                         "pn.phone_number as phone_number",
                         "pn.created_at as phone_number_created_at",
                         "pn.updated_at as phone_number_updated_at",
-                        "c.id as customer_id",
-                        "c.password as password",
-                        "c.first_name as first_name",
-                        "c.last_name as last_name",
-                        "c.address as address",
-                        "c.email as email",
-                        "c.created_at as customer_created_at",
-                        "c.updated_at as customer_updated_at"
+                        "u.id as user_id",
+                        "u.username as username",
+                        "u.password as password",
+                        "u.first_name as first_name",
+                        "u.last_name as last_name",
+                        "u.address as address",
+                        "u.email as email",
+                        "u.role as role",
+                        "u.created_at as user_created_at",
+                        "u.updated_at as user_updated_at"
                 ))
                 .from(DbConsts.SCHEMA, JobEntity.TABLE_NAME, "j")
                 .leftJoin("tt.job_phone_number jpn")
                 .on("jpn.job_id = j.id")
                 .leftJoin("tt.phone_number pn")
                 .on("pn.id = jpn.phone_number_id")
-                .leftJoin("tt.customer c")
-                .on("c.id = j.customer_id")
+                .leftJoin("tt.users u")
+                .on("u.id = j.customer_id")
                 .where("j.id = :jobId")
                 .build();
         return databaseClient.sql(sql)
@@ -126,7 +128,7 @@ public class PsqlJobDetailsRepository implements JobDetailsRepository {
         String destinationAddress;
         String destinationEmail;
         PhoneNumberEntity phone;
-        CustomerEntity customer;
+        UserEntity customer;
 
         public static JobWithPhoneAndCustomer fromRow(Row row) {
             return JobWithPhoneAndCustomer.builder()
@@ -145,15 +147,17 @@ public class PsqlJobDetailsRepository implements JobDetailsRepository {
                             .createdAt(row.get(PHONE_NUMBER_PREFIX + BaseEntity.CREATED_AT, ZonedDateTime.class))
                             .updatedAt(row.get(PHONE_NUMBER_PREFIX + BaseEntity.UPDATED_AT, ZonedDateTime.class))
                             .build())
-                    .customer(CustomerEntity.builder()
-                            .id(row.get(CUSTOMER_PREFIX + BaseEntity.ID, Long.class))
-                            .password(row.get(CustomerEntity.PASSWORD, String.class))
-                            .firstName(row.get(CustomerEntity.FIRST_NAME, String.class))
-                            .lastName(row.get(CustomerEntity.LAST_NAME, String.class))
-                            .address(row.get(CustomerEntity.ADDRESS, String.class))
-                            .email(row.get(CustomerEntity.EMAIL, String.class))
-                            .createdAt(row.get(CUSTOMER_PREFIX + BaseEntity.CREATED_AT, ZonedDateTime.class))
-                            .updatedAt(row.get(CUSTOMER_PREFIX + BaseEntity.UPDATED_AT, ZonedDateTime.class))
+                    .customer(UserEntity.builder()
+                            .id(row.get(USER_PREFIX + BaseEntity.ID, Long.class))
+                            .username(row.get(UserEntity.USERNAME, String.class))
+                            .password(row.get(UserEntity.PASSWORD, String.class))
+                            .firstName(row.get(UserEntity.FIRST_NAME, String.class))
+                            .lastName(row.get(UserEntity.LAST_NAME, String.class))
+                            .address(row.get(UserEntity.ADDRESS, String.class))
+                            .email(row.get(UserEntity.EMAIL, String.class))
+                            .role(row.get(UserEntity.ROLE, String.class))
+                            .createdAt(row.get(USER_PREFIX + BaseEntity.CREATED_AT, ZonedDateTime.class))
+                            .updatedAt(row.get(USER_PREFIX + BaseEntity.UPDATED_AT, ZonedDateTime.class))
                             .build())
                     .build();
         }

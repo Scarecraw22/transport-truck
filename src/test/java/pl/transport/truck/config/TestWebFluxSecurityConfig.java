@@ -10,8 +10,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 public class TestWebFluxSecurityConfig {
 
-    @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
-        return httpSecurity.csrf().disable().build();
-    }
+//    @Bean
+//    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
+//        return httpSecurity.csrf().disable().build();
+//    }
 }

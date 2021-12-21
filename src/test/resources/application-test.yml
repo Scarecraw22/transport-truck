@@ -10,6 +10,7 @@ spring:
     baseline-on-migrate: true
   main:
     banner-mode: OFF
+    allow-bean-definition-overriding: true
 logging:
   level:
     ROOT: INFO

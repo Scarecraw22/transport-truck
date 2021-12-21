@@ -1,10 +1,13 @@
 plugins {
     id 'groovy'
     id 'java'
+    id 'application'
 }
 
 group 'pl.transport.truck'
 version '1.0-SNAPSHOT'
+
+mainClassName = 'pl.transport.truck.TransportTruckApp'
 
 repositories {
     mavenCentral()
@@ -44,6 +47,8 @@ dependencies {
     implementation group: 'org.mapstruct', name: 'mapstruct', version: mapstructVersion
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
+
+    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 
     // Spring boot
     implementation group: 'org.springframework', name: 'spring', version: springFrameworkVersion, ext: 'pom'

@@ -1,14 +1,13 @@
 package pl.transport.truck.db.repository.psql
 
 import org.springframework.beans.factory.annotation.Autowired
-import pl.transport.truck.db.entity.CustomerEntity
 import pl.transport.truck.db.entity.JobEntity
 import pl.transport.truck.db.entity.JobPhoneEntity
 import pl.transport.truck.db.entity.PhoneNumberEntity
-import pl.transport.truck.db.repository.CustomerRepository
+import pl.transport.truck.db.entity.UserEntity
 import pl.transport.truck.db.repository.JobRepository
 import pl.transport.truck.db.repository.PhoneNumberRepository
-import pl.transport.truck.db.repository.psql.PsqlJobPhoneRepository
+import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.specification.RepositorySpecification
 import reactor.test.StepVerifier
 
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong
 class PsqlJobPhoneRepositoryTest extends RepositorySpecification {
 
     @Autowired
-    private CustomerRepository customerRepository
+    private UserRepository userRepository
 
     @Autowired
     private PsqlJobPhoneRepository jobPhoneRepository
@@ -30,29 +29,31 @@ class PsqlJobPhoneRepositoryTest extends RepositorySpecification {
 
     def "test JobPhoneEntity is properly saved"() {
         given:
-        CustomerEntity customer = CustomerEntity.builder()
+        UserEntity user = UserEntity.builder()
+                .username("u1")
                 .password("password")
                 .salt("salt")
                 .firstName("f1")
                 .lastName("l1")
                 .address("a1")
                 .email("e1")
+                .role("r1")
                 .updatedAt(now)
                 .createdAt(now)
                 .build()
 
-        when: "customer is saved"
-        AtomicLong customerId = new AtomicLong()
-        StepVerifier.create(customerRepository.save(customer).log())
+        when: "user is saved"
+        AtomicLong userId = new AtomicLong()
+        StepVerifier.create(userRepository.save(user).log())
                 .consumeNextWith(c -> {
-                    customerId.set(c.getId())
+                    userId.set(c.getId())
                 })
                 .verifyComplete()
 
         and: "JobEntity is saved"
         AtomicLong jobId = new AtomicLong()
         JobEntity jobEntity = JobEntity.builder()
-                .customerId(customerId.get())
+                .customerId(userId.get())
                 .title("title")
                 .description("description")
                 .sourceAddress("source address")

@@ -10,26 +10,28 @@ create table tt.phone_number (
     unique (phone_prefix, phone_number)
 );
 
-drop table if exists tt.customer;
-create table tt.customer (
+drop table if exists tt.user_details;
+create table tt.users (
     id bigserial primary key,
+    username varchar(30) not null,
     password varchar(255) not null,
     salt text not null,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
     address varchar(100),
     email varchar(50) not null,
+    role varchar(20) not null,
     updated_at timestamp with time zone,
     created_at timestamp with time zone not null
 );
 
-drop table if exists tt.customer_phone_number;
-create table tt.customer_phone_number (
-    customer_id bigint not null,
+drop table if exists tt.user_phone_number;
+create table tt.user_phone_number (
+    user_id bigint not null,
     phone_number_id bigint not null,
-    constraint fk_customer foreign key (customer_id) references tt.customer(id),
+    constraint fk_user foreign key (user_id) references tt.users(id),
     constraint fk_phone_number foreign key (phone_number_id) references tt.phone_number(id),
-    unique (customer_id, phone_number_id)
+    unique (user_id, phone_number_id)
 );
 
 drop table if exists tt.job;
@@ -43,7 +45,7 @@ create table tt.job (
     destination_email varchar(50),
     updated_at timestamp with time zone,
     created_at timestamp with time zone not null,
-    constraint fk_customer foreign key (customer_id) references tt.customer(id)
+    constraint fk_customer foreign key (customer_id) references tt.users(id)
 );
 
 drop table if exists tt.job_phone_number;
@@ -55,28 +57,6 @@ create table tt.job_phone_number (
     unique (job_id, phone_number_id)
 );
 
-drop table if exists tt.driver;
-create table tt.driver (
-    id bigserial primary key,
-    password varchar(255) not null,
-    salt text not null,
-    first_name varchar(50) not null,
-    last_name varchar(50) not null,
-    address varchar(100),
-    email varchar(50) not null,
-    updated_at timestamp with time zone,
-    created_at timestamp with time zone not null
-);
-
-drop table if exists tt.driver_phone_number;
-create table tt.driver_phone_number (
-    driver_id bigint not null,
-    phone_number_id bigint not null,
-    constraint fk_driver foreign key (driver_id) references tt.driver(id),
-    constraint fk_phone_number foreign key (phone_number_id) references tt.phone_number(id),
-    unique (driver_id, phone_number_id)
-);
-
 drop table if exists tt.finished_job;
 create table tt.finished_job (
     id bigserial primary key,
@@ -86,7 +66,7 @@ create table tt.finished_job (
     updated_at timestamp with time zone,
     created_at timestamp with time zone not null,
     constraint fk_job foreign key (job_id) references tt.job(id),
-    constraint fk_driver foreign key (driver_id) references tt.driver(id)
+    constraint fk_driver foreign key (driver_id) references tt.users(id)
 );
 
 drop table if exists tt.assigned_job;
@@ -99,10 +79,5 @@ create table tt.assigned_job (
     updated_at timestamp with time zone,
     created_at timestamp with time zone not null,
     constraint fk_job foreign key (job_id) references tt.job(id),
-    constraint fk_driver foreign key (driver_id) references tt.driver(id)
-);
-
-drop table if exists tt.salt;
-create table tt.salt (
-    hash text
+    constraint fk_driver foreign key (driver_id) references tt.users(id)
 );

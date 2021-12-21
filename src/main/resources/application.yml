@@ -1,15 +1,24 @@
 spring:
   r2dbc:
+    url: 'r2dbc:postgresql://localhost:5432'
+    username: postgres
+    password: password
     pool:
       enabled: true
       initial-size: 10
       max-acquire-time: 3s
       max-size: 20
   flyway:
+    url: 'jdbc:postgresql://localhost:5432'
+    user: postgres
+    password: password
     enabled: true
     baseline-on-migrate: true
   main:
     banner-mode: OFF
+    allow-bean-definition-overriding: true
+  redis:
+    port: 6379
 logging:
   level:
     root: INFO

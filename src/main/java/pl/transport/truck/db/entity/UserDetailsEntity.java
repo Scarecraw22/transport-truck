@@ -11,7 +11,13 @@ import java.util.Set;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class DriverDetailsEntity extends DriverEntity {
+public class UserDetailsEntity extends BaseEntity {
 
+    protected String username;
+    protected String firstName;
+    protected String lastName;
+    protected String address;
+    protected String email;
+    protected String role;
     private Set<PhoneNumberEntity> phoneNumbers;
 }

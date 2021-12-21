@@ -29,6 +29,6 @@ public class JobDetailsEntity extends BaseEntity {
     protected String sourceAddress;
     protected String destinationAddress;
     protected String destinationEmail;
-    protected CustomerEntity customer;
+    protected UserEntity customer;
     protected Set<PhoneNumberEntity> phones;
 }

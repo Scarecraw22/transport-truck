@@ -2,6 +2,7 @@ package pl.transport.truck.service.password;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.transport.truck.service.md5.Md5Service;
 import pl.transport.truck.utils.StringUtils;
@@ -10,20 +11,20 @@ import pl.transport.truck.utils.StringUtils;
 @RequiredArgsConstructor
 public class PasswordServiceImpl implements PasswordService {
 
-    private final PasswordHasher passwordHasher;
+    private final PasswordEncoder passwordEncoder;
     private final Md5Service md5Service;
 
     @Override
     public String encode(@NonNull String rawPassword, @NonNull String salt) {
-        return passwordHasher.hash(rawPassword + salt);
+        return passwordEncoder.encode(rawPassword + salt);
     }
 
     @Override
     public boolean matches(@NonNull final String rawPassword,
                            @NonNull final String salt,
-                           @NonNull final String hashedPassword) {
+                           @NonNull final String encodedPassword) {
 
-        return hashedPassword.equals(passwordHasher.hash(rawPassword + salt));
+        return passwordEncoder.matches(rawPassword + salt, encodedPassword);
     }
 
     @Override

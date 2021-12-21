@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.transport.truck.converter.CustomerModelConverter;
-import pl.transport.truck.db.entity.CustomerEntity;
 import pl.transport.truck.db.entityManager.CustomerEntityManager;
 import pl.transport.truck.rest.model.customer.CreateCustomerRequest;
 import pl.transport.truck.rest.model.customer.CreateCustomerResponse;

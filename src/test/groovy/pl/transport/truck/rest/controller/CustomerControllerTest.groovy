@@ -6,23 +6,28 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import pl.transport.truck.config.TestWebFluxSecurityConfig
+import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
 import pl.transport.truck.initializer.RedisIntegrationTestInitializer
 import pl.transport.truck.rest.model.customer.CreateCustomerRequest
 import pl.transport.truck.rest.model.customer.CreateCustomerResponse
 import pl.transport.truck.rest.model.customer.GetCustomerDetailsResponse
+import pl.transport.truck.rest.utils.RestConsts
+import pl.transport.truck.utils.StringConsts
 import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
 import spock.lang.Specification
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
+import java.util.stream.Collectors
 
 @Slf4j
 @ActiveProfiles("test")
@@ -37,6 +42,9 @@ class CustomerControllerTest extends Specification {
 
     @Autowired
     private Flyway flyway
+
+    @Autowired
+    private UserRepository userRepository
 
     def setup() {
         synchronized (this) {
@@ -53,9 +61,11 @@ class CustomerControllerTest extends Specification {
     def "test"() {
         given:
         CreateCustomerRequest request = CreateCustomerRequest.builder()
+                .username("username")
                 .firstName("first")
                 .lastName("last")
                 .email("email")
+                .role("role")
                 .address("address")
                 .password("password")
                 .phones(Set.of())
@@ -64,10 +74,14 @@ class CustomerControllerTest extends Specification {
         when:
         Flux<CreateCustomerResponse> response = client.post()
                 .uri("/transport-truck/customer")
+                .header("Origin", "http://any-origin.com")
+                .header("Access-Control-Request-Method", "POST")
                 .bodyValue(request)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().is2xxSuccessful()
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, String.join(StringConsts.COMMA_WITH_SPACE, RestConsts.ALLOWED_HTTP_METHODS))
                 .returnResult(CreateCustomerResponse.class)
                 .getResponseBody()
 
@@ -92,6 +106,10 @@ class CustomerControllerTest extends Specification {
                 .assertNext(next -> {
                     assert next.getId() == newCustomerId.get()
                 })
+                .verifyComplete()
+
+        and: "Delete user"
+        StepVerifier.create(userRepository.deleteById(newCustomerId.get()).log())
                 .verifyComplete()
     }
 }

@@ -2,10 +2,10 @@ package pl.transport.truck.db.entityManager;
 
 import lombok.RequiredArgsConstructor;
 import pl.transport.truck.common.ex.NotImplementedException;
-import pl.transport.truck.db.entity.CustomerDetailsEntity;
-import pl.transport.truck.db.entity.CustomerEntity;
-import pl.transport.truck.db.repository.CustomerDetailsRepository;
-import pl.transport.truck.db.repository.CustomerRepository;
+import pl.transport.truck.db.entity.UserDetailsEntity;
+import pl.transport.truck.db.entity.UserEntity;
+import pl.transport.truck.db.repository.UserDetailsRepository;
+import pl.transport.truck.db.repository.UserRepository;
 import pl.transport.truck.db.utils.EntityManager;
 import reactor.core.publisher.Mono;
 
@@ -13,26 +13,26 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CustomerEntityManagerImpl implements CustomerEntityManager {
 
-    private final CustomerRepository customerRepository;
-    private final CustomerDetailsRepository customerDetailsRepository;
+    private final UserRepository userRepository;
+    private final UserDetailsRepository userDetailsRepository;
 
     @Override
-    public Mono<CustomerEntity> getById(Long id) {
-        return customerRepository.findById(id);
+    public Mono<UserEntity> getById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override
-    public Mono<CustomerEntity> save(CustomerEntity entity) {
-        return customerRepository.save(entity);
+    public Mono<UserEntity> save(UserEntity entity) {
+        return userRepository.save(entity);
     }
 
     @Override
-    public Mono<CustomerEntity> update(CustomerEntity entity) {
+    public Mono<UserEntity> update(UserEntity entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public Mono<CustomerDetailsEntity> getCustomerDetails(Long customerId) {
-        return customerDetailsRepository.getCustomerDetails(customerId);
+    public Mono<UserDetailsEntity> getCustomerDetails(Long customerId) {
+        return userDetailsRepository.getUserDetails(customerId);
     }
 }

@@ -11,10 +11,12 @@ import java.util.Set;
 @Jacksonized
 public class CreateCustomerRequest {
 
+    String username;
     String password;
     String firstName;
     String lastName;
     String email;
+    String role;
     String address;
     Set<Phone> phones;
 

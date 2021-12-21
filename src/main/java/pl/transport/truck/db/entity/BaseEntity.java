@@ -1,5 +1,6 @@
 package pl.transport.truck.db.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -9,6 +10,7 @@ import java.time.ZonedDateTime;
 
 @Data
 @SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 public abstract class BaseEntity {
 

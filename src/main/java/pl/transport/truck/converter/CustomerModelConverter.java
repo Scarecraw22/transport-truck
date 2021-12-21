@@ -1,8 +1,8 @@
 package pl.transport.truck.converter;
 
 import org.mapstruct.Mapper;
-import pl.transport.truck.db.entity.CustomerDetailsEntity;
-import pl.transport.truck.db.entity.CustomerEntity;
+import pl.transport.truck.db.entity.UserDetailsEntity;
+import pl.transport.truck.db.entity.UserEntity;
 import pl.transport.truck.rest.model.customer.CreateCustomerRequest;
 import pl.transport.truck.rest.model.customer.CreateCustomerResponse;
 import pl.transport.truck.rest.model.customer.GetCustomerDetailsResponse;
@@ -12,9 +12,9 @@ import pl.transport.truck.rest.model.customer.GetCustomerDetailsResponse;
 })
 public interface CustomerModelConverter {
 
-    CustomerEntity convertToCustomerEntity(CreateCustomerRequest request);
+    UserEntity convertToCustomerEntity(CreateCustomerRequest request);
 
-    CreateCustomerResponse convertToCreateCustomerResponse(CustomerEntity entity);
+    CreateCustomerResponse convertToCreateCustomerResponse(UserEntity entity);
 
-    GetCustomerDetailsResponse convertToCustomerDetailsResponse(CustomerDetailsEntity entity);
+    GetCustomerDetailsResponse convertToCustomerDetailsResponse(UserDetailsEntity entity);
 }

@@ -2,9 +2,9 @@ package pl.transport.truck.db.repository.psql
 
 import org.springframework.beans.factory.annotation.Autowired
 import pl.transport.truck.db.entity.*
-import pl.transport.truck.db.repository.CustomerRepository
 import pl.transport.truck.db.repository.JobRepository
 import pl.transport.truck.db.repository.PhoneNumberRepository
+import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.specification.RepositorySpecification
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -26,33 +26,35 @@ class PsqlJobDetailsRepositoryTest extends RepositorySpecification {
     private PsqlJobDetailsRepository jobDetailsRepository
 
     @Autowired
-    private CustomerRepository customerRepository
+    private UserRepository userRepository
 
-    def "test if Job with PhoneNumber and Customer is properly retrieved"() {
+    def "test if Job with PhoneNumber and User is properly retrieved"() {
         given:
-        CustomerEntity customer = CustomerEntity.builder()
+        UserEntity user = UserEntity.builder()
+                .username("u1")
                 .password("password")
                 .salt("salt")
                 .firstName("f1")
                 .lastName("l1")
                 .address("a1")
                 .email("e1")
+                .role("r1")
                 .updatedAt(now)
                 .createdAt(now)
                 .build()
 
-        when: "customer is saved"
-        AtomicLong customerId = new AtomicLong()
-        StepVerifier.create(customerRepository.save(customer).log())
+        when: "user is saved"
+        AtomicLong userId = new AtomicLong()
+        StepVerifier.create(userRepository.save(user).log())
                 .consumeNextWith(c -> {
-                    customerId.set(c.getId())
+                    userId.set(c.getId())
                 })
                 .verifyComplete()
 
         and: "JobEntity is saved"
         AtomicLong jobId = new AtomicLong()
         JobEntity jobEntity = JobEntity.builder()
-                .customerId(customerId.get())
+                .customerId(userId.get())
                 .title("title")
                 .description("description")
                 .sourceAddress("source address")
@@ -102,8 +104,8 @@ class PsqlJobDetailsRepositoryTest extends RepositorySpecification {
                     assert jd.getDestinationEmail() == "destination email"
                     assert jd.getUpdatedAt().isEqual(now)
                     assert jd.getCreatedAt().isEqual(now)
-                    CustomerEntity c = jd.getCustomer()
-                    assert c.getId() == customerId.get()
+                    UserEntity c = jd.getCustomer()
+                    assert c.getId() == userId.get()
                     assert c.getPassword() == "password"
                     assert c.getFirstName() == "f1"
                     assert c.getLastName() == "l1"
@@ -133,7 +135,7 @@ class PsqlJobDetailsRepositoryTest extends RepositorySpecification {
         StepVerifier.create(jobRepository.deleteById(jobId.get()).log())
                 .expectNextCount(0)
                 .verifyComplete()
-        StepVerifier.create(customerRepository.deleteById(customerId.get()).log())
+        StepVerifier.create(userRepository.deleteById(userId.get()).log())
                 .expectNextCount(0)
                 .verifyComplete()
     }
