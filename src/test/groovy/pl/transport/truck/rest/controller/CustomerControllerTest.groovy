@@ -8,10 +8,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.servlet.client.MockMvcWebTestClient
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.web.context.WebApplicationContext
 import pl.transport.truck.config.TestWebFluxSecurityConfig
 import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
@@ -27,7 +31,9 @@ import spock.lang.Specification
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
-import java.util.stream.Collectors
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
+
 
 @Slf4j
 @ActiveProfiles("test")
@@ -76,6 +82,7 @@ class CustomerControllerTest extends Specification {
                 .uri("/transport-truck/customer")
                 .header("Origin", "http://any-origin.com")
                 .header("Access-Control-Request-Method", "POST")
+                .header("X-RequestId", "request-id")
                 .bodyValue(request)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -96,6 +103,9 @@ class CustomerControllerTest extends Specification {
         then:
         Flux<GetCustomerDetailsResponse> customerDetails = client.get()
                 .uri("/transport-truck/customer/${newCustomerId.get()}")
+                .header("Origin", "http://any-origin.com")
+                .header("Access-Control-Request-Method", "POST")
+                .header("X-RequestId", "request-id")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .returnResult(GetCustomerDetailsResponse.class)

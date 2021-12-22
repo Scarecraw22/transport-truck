@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 @EntityManager
 @RequiredArgsConstructor
-public class CustomerEntityManagerImpl implements CustomerEntityManager {
+public class UserEntityManagerImpl implements UserEntityManager {
 
     private final UserRepository userRepository;
     private final UserDetailsRepository userDetailsRepository;
@@ -34,5 +34,10 @@ public class CustomerEntityManagerImpl implements CustomerEntityManager {
     @Override
     public Mono<UserDetailsEntity> getCustomerDetails(Long customerId) {
         return userDetailsRepository.getUserDetails(customerId);
+    }
+
+    @Override
+    public Mono<UserEntity> getByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

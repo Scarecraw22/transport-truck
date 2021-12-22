@@ -19,10 +19,4 @@ public class ServiceConfig {
     public PasswordEncoder passwordEncoder(PepperProvider pepperProvider) {
         return new Pbkdf2PasswordEncoder(pepperProvider.get());
     }
-
-//    @Bean
-//    public CustomerService customerService(CustomerEntityManager customerEntityManager,
-//                                           CustomerModelConverter customerModelConverter) {
-//        return new CustomerServiceImpl(customerEntityManager, customerModelConverter);
-//    }
 }

@@ -25,3 +25,5 @@ pl:
     truck:
       database-type: PSQL
       fixed-clock: true
+      jwt:
+        token: dJcleA+nPLY7dGHhoQS5IVfz6WqUSwHPvoD4Kuc7AdM=

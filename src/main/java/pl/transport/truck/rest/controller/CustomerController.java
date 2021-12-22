@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.transport.truck.rest.model.customer.CreateCustomerRequest;
-import pl.transport.truck.rest.model.customer.CreateCustomerResponse;
-import pl.transport.truck.rest.model.customer.GetCustomerDetailsResponse;
+import pl.transport.truck.rest.model.customer.*;
 import pl.transport.truck.service.customer.CustomerService;
 import reactor.core.publisher.Mono;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/transport-truck/customer")
@@ -23,7 +22,12 @@ public class CustomerController {
                 .map(ResponseEntity::ok);
     }
 
-    @CrossOrigin(methods = {RequestMethod.POST})
+    @PostMapping("/login")
+    public Mono<ResponseEntity<LoginCustomerResponse>> createCustomer(@RequestBody LoginCustomerRequest request) {
+        return customerService.loginCustomer(request)
+                .map(ResponseEntity::ok);
+    }
+
     @PostMapping
     public Mono<ResponseEntity<CreateCustomerResponse>> createCustomer(@RequestBody CreateCustomerRequest request) {
         return customerService.createCustomer(request)
