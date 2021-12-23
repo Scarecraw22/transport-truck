@@ -25,7 +25,7 @@ public class PsqlUserPhoneRepository implements UserPhoneRepository {
     @Override
     public Mono<UserPhoneEntity> save(UserPhoneEntity entity) {
         return databaseClient.sql(queryFactory.create()
-                        .insertInto(DbConsts.SCHEMA, UserPhoneEntity.TABLE_NAME, List.of(UserPhoneEntity.USER_ID, UserPhoneEntity.PHONE_NUMBER_ID))
+                        .insertInto(UserPhoneEntity.TABLE_NAME, List.of(UserPhoneEntity.USER_ID, UserPhoneEntity.PHONE_NUMBER_ID))
                         .values(entity.getUserId(), entity.getPhoneNumberId())
                         .returningAll()
                         .build())
@@ -36,7 +36,7 @@ public class PsqlUserPhoneRepository implements UserPhoneRepository {
     @Override
     public Mono<UserPhoneEntity> delete(UserPhoneEntity entity) {
         return databaseClient.sql(queryFactory.create()
-                        .deleteFrom(DbConsts.SCHEMA, UserPhoneEntity.TABLE_NAME)
+                        .deleteFrom(UserPhoneEntity.TABLE_NAME)
                         .where("user_id = :userId AND phone_number_id = :phoneNumberId")
                         .returningAll()
                         .build())

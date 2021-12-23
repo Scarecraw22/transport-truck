@@ -10,7 +10,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @SuperBuilder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table("tt.phone_number")
+@Table("phone_number")
 public class PhoneNumberEntity extends BaseEntity {
 
     public static final String PHONE_PREFIX = "phone_prefix";

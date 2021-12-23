@@ -5,6 +5,8 @@ spring:
       initial-size: 10
       max-acquire-time: 3s
       max-size: 20
+    properties:
+      database: test
   flyway:
     enabled: true
     baseline-on-migrate: true

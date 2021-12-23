@@ -1,6 +1,7 @@
 package pl.transport.truck.db.entityManager;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import pl.transport.truck.common.ex.NotImplementedException;
 import pl.transport.truck.db.entity.UserDetailsEntity;
 import pl.transport.truck.db.entity.UserEntity;
@@ -9,6 +10,7 @@ import pl.transport.truck.db.repository.UserRepository;
 import pl.transport.truck.db.utils.EntityManager;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @EntityManager
 @RequiredArgsConstructor
 public class UserEntityManagerImpl implements UserEntityManager {
@@ -23,6 +25,7 @@ public class UserEntityManagerImpl implements UserEntityManager {
 
     @Override
     public Mono<UserEntity> save(UserEntity entity) {
+        log.info("Saving user with username: {}", entity.getUsername());
         return userRepository.save(entity);
     }
 

@@ -8,9 +8,9 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import pl.transport.truck.db.entity.BaseEntity;
+import pl.transport.truck.db.entity.PhoneNumberEntity;
 import pl.transport.truck.db.entity.UserDetailsEntity;
 import pl.transport.truck.db.entity.UserEntity;
-import pl.transport.truck.db.entity.PhoneNumberEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.repository.UserDetailsRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
@@ -56,10 +56,10 @@ public class PsqlUserDetailsRepository implements UserDetailsRepository {
                         "pn.created_at as phone_number_created_at",
                         "pn.updated_at as phone_number_updated_at"
                 ))
-                .from(DbConsts.SCHEMA, UserEntity.TABLE_NAME, "u")
-                .leftJoin("tt.user_phone_number upn")
+                .from(UserEntity.TABLE_NAME, "u")
+                .leftJoin("user_phone_number upn")
                 .on("upn.user_id = u.id")
-                .leftJoin("tt.phone_number pn")
+                .leftJoin("phone_number pn")
                 .on("pn.id = upn.phone_number_id")
                 .where("u.id = :userId")
                 .build();

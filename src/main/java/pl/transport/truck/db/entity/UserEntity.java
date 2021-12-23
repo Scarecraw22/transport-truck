@@ -12,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"password", "salt"})
 @ToString(callSuper = true, exclude = {"password", "salt"})
-@Table("tt.users")
+@Table("users")
 public class UserEntity extends BaseEntity {
 
     public static final String TABLE_NAME = "users";

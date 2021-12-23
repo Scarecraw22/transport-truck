@@ -11,13 +11,11 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
-import org.springframework.security.web.server.csrf.WebSessionServerCsrfTokenRepository;
 import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import pl.transport.truck.db.repository.UserRepository;
 import pl.transport.truck.rest.jwt.JwtAuthenticationManager;
 import pl.transport.truck.rest.jwt.JwtServerAuthenticationConverter;
@@ -49,6 +47,7 @@ public class SecurityConfig {
                 .and()
                 .csrf().csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
                 .requireCsrfProtectionMatcher(getURLsForDisabledCSRF())
+                // TODO ADD filter to send CSRF token per session
                 .and()
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.POST, ALLOWED_PATHS).permitAll()

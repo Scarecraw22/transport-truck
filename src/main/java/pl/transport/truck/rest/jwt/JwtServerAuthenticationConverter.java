@@ -15,7 +15,7 @@ public class JwtServerAuthenticationConverter implements ServerAuthenticationCon
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
         return Mono.justOrEmpty(exchange.getRequest().getHeaders()
-                .getFirst(HttpHeaders.AUTHORIZATION))
+                        .getFirst(HttpHeaders.AUTHORIZATION))
                 .filter(header -> header.startsWith(PREFIX))
                 .map(header -> header.substring(7))
                 .map(TokenBearer::new);

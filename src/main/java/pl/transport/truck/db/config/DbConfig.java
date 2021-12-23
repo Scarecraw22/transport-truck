@@ -10,15 +10,17 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import pl.transport.truck.db.config.properties.SpringFlywayProperties;
-import pl.transport.truck.db.converter.UserReadingConverter;
 import pl.transport.truck.db.converter.PhoneNumberReadingConverter;
+import pl.transport.truck.db.converter.UserReadingConverter;
 import pl.transport.truck.db.query.PsqlStringQueryBuilderFactory;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.utils.DbConsts;
 import pl.transport.truck.db.utils.DbUtils;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -33,11 +35,17 @@ public class DbConfig extends AbstractR2dbcConfiguration {
     private final SpringFlywayProperties springFlywayProperties;
 
     @Bean
+    @DependsOn("connectionFactory")
     public Flyway flyway() {
 
         if (springFlywayProperties.isEnabled()) {
-            return new Flyway(Flyway.configure()
+            Flyway flyway = new Flyway(Flyway.configure()
                     .dataSource(r2dbcProperties.getUrl().replace(DbConsts.R2DBC, DbConsts.JDBC), r2dbcProperties.getUsername(), r2dbcProperties.getPassword()));
+
+            log.info("Applying migrate on Flyway");
+            flyway.migrate();
+            flyway.validate();
+            return flyway;
         } else {
             log.warn("Flyway is disabled");
             return null;
@@ -66,14 +74,22 @@ public class DbConfig extends AbstractR2dbcConfiguration {
         String port = DbUtils.getPortFromUrl(url);
         log.info("Retrieved port: {}", port);
 
-        return new PostgresqlConnectionFactory(
+        ConnectionFactory connectionFactory = new PostgresqlConnectionFactory(
                 PostgresqlConnectionConfiguration.builder()
                         .port(Integer.parseInt(port))
                         .host(host)
                         .username(r2dbcProperties.getUsername())
                         .password(r2dbcProperties.getPassword())
+                        .schema("public")
+                        .database(r2dbcProperties.getProperties().get("database"))
                         .build()
         );
+//
+//        Mono.from(connectionFactory.create())
+//                .map(c -> c.createStatement("SET SCHEMA PUBLIC").execute())
+//                .subscribe();
+
+        return connectionFactory;
     }
 
     @Bean

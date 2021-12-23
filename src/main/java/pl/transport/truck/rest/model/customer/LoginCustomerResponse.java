@@ -1,9 +1,13 @@
 package pl.transport.truck.rest.model.customer;
 
+import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 @Value
-public class LoginCustomerResponse  {
+@Builder
+@Jacksonized
+public class LoginCustomerResponse {
 
     String token;
 }

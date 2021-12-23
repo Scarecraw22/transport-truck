@@ -25,7 +25,7 @@ public class PsqlJobPhoneRepository implements JobPhoneRepository {
     @Override
     public Mono<JobPhoneEntity> save(JobPhoneEntity entity) {
         return databaseClient.sql(queryFactory.create()
-                        .insertInto(DbConsts.SCHEMA, JobPhoneEntity.TABLE_NAME, List.of(JobPhoneEntity.JOB_ID, JobPhoneEntity.PHONE_NUMBER_ID))
+                        .insertInto(JobPhoneEntity.TABLE_NAME, List.of(JobPhoneEntity.JOB_ID, JobPhoneEntity.PHONE_NUMBER_ID))
                         .values(entity.getJobId(), entity.getPhoneNumberId())
                         .returningAll()
                         .build())
@@ -36,7 +36,7 @@ public class PsqlJobPhoneRepository implements JobPhoneRepository {
     @Override
     public Mono<JobPhoneEntity> delete(JobPhoneEntity entity) {
         return databaseClient.sql(queryFactory.create()
-                        .deleteFrom(DbConsts.SCHEMA, JobPhoneEntity.TABLE_NAME)
+                        .deleteFrom(JobPhoneEntity.TABLE_NAME)
                         .where("job_id = :jobId AND phone_number_id = :phoneNumberId")
                         .returningAll()
                         .build())

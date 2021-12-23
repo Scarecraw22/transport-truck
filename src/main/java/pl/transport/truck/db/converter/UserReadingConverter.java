@@ -11,6 +11,8 @@ public class UserReadingConverter extends BaseReadingConverter<UserEntity> {
     public UserEntity convert(Row source) {
         UserEntity entity = UserEntity.builder()
                 .username(source.get(UserEntity.USERNAME, String.class))
+                .password(source.get(UserEntity.PASSWORD, String.class))
+                .salt(source.get(UserEntity.SALT, String.class))
                 .firstName(source.get(UserEntity.FIRST_NAME, String.class))
                 .lastName(source.get(UserEntity.LAST_NAME, String.class))
                 .address(source.get(UserEntity.ADDRESS, String.class))

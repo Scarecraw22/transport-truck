@@ -12,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@Table("tt.job")
+@Table("job")
 public class JobEntity extends BaseEntity {
 
     public static final String TABLE_NAME = "job";

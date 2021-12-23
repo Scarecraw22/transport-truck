@@ -1,8 +1,5 @@
 package pl.transport.truck.service.customer;
 
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Encoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
@@ -34,6 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
         return Mono.just(request)
                 .map(customerModelConverter::convertToCustomerEntity)
                 .map(customerEntity -> {
+                    log.info("Generating password for user: {}", request.getUsername());
                     String salt = passwordService.generateSalt();
                     customerEntity.setSalt(salt);
                     customerEntity.setPassword(passwordService.encode(customerEntity.getPassword(), salt));
@@ -59,11 +57,14 @@ public class CustomerServiceImpl implements CustomerService {
                 .flatMap(userDetails -> userEntityManager.getByUsername(request.getUsername()))
                 .map(user -> {
                     if (passwordService.matches(request.getPassword(), user.getSalt(), user.getPassword())) {
-                        return new LoginCustomerResponse(jwtSupportService.generate(user.getUsername()).getValue());
+                        return LoginCustomerResponse.builder()
+                                .token(jwtSupportService.generate(user.getUsername()).getValue())
+                                .build();
                     } else {
                         throw new WrongPasswordException("Password doesn't match for username: " + request.getUsername());
                     }
                 })
-                .switchIfEmpty(Mono.error(new UserNotFoundException("User with username: " + request.getUsername() + " doesn't exist")));
+                .switchIfEmpty(Mono.error(new UserNotFoundException("User with username: " + request.getUsername() + " doesn't exist")))
+                .doOnError(throwable -> log.error("Error while trying to save client: {}, exception: ", request.getUsername(), throwable));
     }
 }

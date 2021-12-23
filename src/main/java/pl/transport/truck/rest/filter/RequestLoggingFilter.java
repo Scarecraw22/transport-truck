@@ -5,15 +5,18 @@ import org.slf4j.MDC;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.ServerWebExchangeDecorator;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+import pl.transport.truck.rest.interceptor.RequestLoggingInterceptor;
+import pl.transport.truck.rest.interceptor.ResponseLoggingInterceptor;
 import pl.transport.truck.rest.utils.CustomHeaders;
 import pl.transport.truck.utils.CollectionUtils;
 import reactor.core.publisher.Mono;
-import reactor.util.context.Context;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -40,9 +43,34 @@ public class RequestLoggingFilter implements WebFilter {
             return response.writeWith(Mono.just(buffer));
         }
 
-        return chain.filter(exchange)
-                .doFinally(signalType -> logWithContext(httpHeaders, headers -> log.info("Setting up MDC")))
-                .contextWrite(Context.of("CONTEXT_KEY", requestId));
+        final long startTime = System.currentTimeMillis();
+        MDC.put(CustomHeaders.REQUEST_ID.getValue(), requestId);
+        ServerWebExchangeDecorator exchangeDecorator = new ServerWebExchangeDecorator(exchange) {
+
+            @Override
+            public ServerHttpRequest getRequest() {
+                return new RequestLoggingInterceptor(super.getRequest());
+            }
+
+            @Override
+            public ServerHttpResponse getResponse() {
+                return new ResponseLoggingInterceptor(super.getResponse(), startTime, requestId);
+            }
+        };
+        return chain.filter(exchangeDecorator)
+
+                .doOnSuccess(aVoid -> {
+                    logResponse(startTime, exchange.getResponse(), exchange.getResponse().getStatusCode());
+                })
+                .doOnError(aVoid -> {
+                    logResponse(startTime, exchange.getResponse(), HttpStatus.INTERNAL_SERVER_ERROR);
+                })
+                .doFinally(signalType -> MDC.clear());
+    }
+
+    private void logResponse(long startTime, ServerHttpResponse response, HttpStatus overriddenStatus) {
+        final long duration = System.currentTimeMillis() - startTime;
+        log.info("Response[{}ms]: status={}, headers={}", duration, overriddenStatus, response.getHeaders());
     }
 
     private String getRequestId(HttpHeaders httpHeaders) {

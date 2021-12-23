@@ -8,7 +8,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @Builder
 @AllArgsConstructor
-@Table("tt.job_phone_number")
+@Table("job_phone_number")
 public class JobPhoneEntity {
 
     public static final String TABLE_NAME = "job_phone_number";

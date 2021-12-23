@@ -18,7 +18,8 @@ public class RestConsts {
             "X-Requested-With",
             "Content-Type",
             "Accept",
-            "Authorization"
+            "Authorization",
+            CustomHeaders.REQUEST_ID.getValue()
     );
     public final List<String> ALLOWED_HTTP_METHODS = Stream.of(HttpMethod.values()).map(HttpMethod::name).collect(Collectors.toList());
 }

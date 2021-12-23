@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: 'r2dbc:postgresql://localhost:5432'
+    url: 'r2dbc:postgresql://localhost:5432/test'
     username: postgres
     password: password
     pool:
@@ -8,8 +8,10 @@ spring:
       initial-size: 10
       max-acquire-time: 3s
       max-size: 20
+    properties:
+      database: test
   flyway:
-    url: 'jdbc:postgresql://localhost:5432'
+    url: 'jdbc:postgresql://localhost:5432/test'
     user: postgres
     password: password
     enabled: true
@@ -21,9 +23,16 @@ spring:
     port: 6379
 logging:
   level:
-    root: INFO
+    ROOT: INFO
+  io:
+    r2dbc:
+      postgresql:
+        QUERY: DEBUG
+        PARAM: DEBUG
 
 pl:
   transport:
     truck:
       database-type: PSQL
+      jwt:
+        token: dJcleA+nPLY7dGHhoQS5IVfz6WqUSwHPvoD4Kuc7AdM=

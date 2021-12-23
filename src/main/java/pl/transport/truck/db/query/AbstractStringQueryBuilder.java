@@ -94,8 +94,8 @@ public abstract class AbstractStringQueryBuilder implements StringQueryBuilder {
     }
 
     @Override
-    public StringQueryBuilder from(String schema, String table) {
-        return from(schema, table, null);
+    public StringQueryBuilder from(String table, String alias) {
+        return from(null, table, alias);
     }
 
     @Override

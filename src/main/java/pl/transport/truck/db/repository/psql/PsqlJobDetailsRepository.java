@@ -62,12 +62,12 @@ public class PsqlJobDetailsRepository implements JobDetailsRepository {
                         "u.created_at as user_created_at",
                         "u.updated_at as user_updated_at"
                 ))
-                .from(DbConsts.SCHEMA, JobEntity.TABLE_NAME, "j")
-                .leftJoin("tt.job_phone_number jpn")
+                .from(JobEntity.TABLE_NAME, "j")
+                .leftJoin("job_phone_number jpn")
                 .on("jpn.job_id = j.id")
-                .leftJoin("tt.phone_number pn")
+                .leftJoin("phone_number pn")
                 .on("pn.id = jpn.phone_number_id")
-                .leftJoin("tt.users u")
+                .leftJoin("users u")
                 .on("u.id = j.customer_id")
                 .where("j.id = :jobId")
                 .build();
