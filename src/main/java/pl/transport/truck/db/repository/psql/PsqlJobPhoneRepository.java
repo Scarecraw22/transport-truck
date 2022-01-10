@@ -8,7 +8,6 @@ import pl.transport.truck.db.entity.JobPhoneEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.repository.JobPhoneRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
-import pl.transport.truck.db.utils.DbConsts;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

@@ -5,12 +5,8 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import pl.transport.truck.rest.jwt.ex.InvalidBearerTokenException;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
@@ -24,18 +20,14 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
         return Mono.justOrEmpty(authentication)
                 .filter(auth -> auth instanceof TokenBearer)
                 .cast(TokenBearer.class)
-                .map(this::validate)
-                .onErrorMap(error -> new InvalidBearerTokenException(error.getMessage()));
+                .flatMap(this::validate);
     }
 
-    private Authentication validate(TokenBearer tokenBearer) {
-        String username = jwtSupportService.getUsername(tokenBearer);
-        UserDetails userDetails = userDetailsService.findByUsername(username).single().block(Duration.ofSeconds(10));
-
-        if (userDetails != null && jwtSupportService.isValid(tokenBearer, userDetails)) {
-            return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-        } else {
-            throw new IllegalArgumentException("Token is not valid");
-        }
+    private Mono<UsernamePasswordAuthenticationToken> validate(TokenBearer tokenBearer) {
+        return Mono.just(tokenBearer)
+                .flatMap(bearer -> userDetailsService.findByUsername(jwtSupportService.getUsername(tokenBearer)))
+                .filter(userDetails -> userDetails != null && jwtSupportService.isValid(tokenBearer, userDetails))
+                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Token is not valid")));
     }
 }

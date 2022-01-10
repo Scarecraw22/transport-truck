@@ -20,7 +20,6 @@ import pl.transport.truck.db.query.PsqlStringQueryBuilderFactory;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.utils.DbConsts;
 import pl.transport.truck.db.utils.DbUtils;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 

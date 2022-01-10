@@ -5,17 +5,16 @@ import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
-import pl.transport.truck.config.TestWebFluxSecurityConfig
 import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
 import pl.transport.truck.initializer.RedisIntegrationTestInitializer
+import pl.transport.truck.rest.config.JwtProperties
 import pl.transport.truck.rest.model.customer.*
 import pl.transport.truck.rest.utils.RestConsts
 import pl.transport.truck.utils.StringConsts
@@ -34,7 +33,6 @@ import java.util.concurrent.atomic.AtomicLong
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(
         initializers = [RedisIntegrationTestInitializer.class, DbIntegrationTestInitializer.class])
-@Import(TestWebFluxSecurityConfig.class)
 class CustomerControllerTest extends Specification {
 
     private static AtomicBoolean migrated = new AtomicBoolean(false)
@@ -45,6 +43,9 @@ class CustomerControllerTest extends Specification {
 
     @Autowired
     private UserRepository userRepository
+
+    @Autowired
+    private JwtProperties jwtProperties
 
     def setup() {
         synchronized (this) {
@@ -115,17 +116,19 @@ class CustomerControllerTest extends Specification {
                 .getResponseBody()
 
         then:
+        def token = null
         StepVerifier.create(loginResponse.log())
-                .assertNext(next -> {
-                    assert next.getToken() != null
+                .consumeNextWith(next -> {
+                    token = next.getToken()
                 })
                 .verifyComplete()
 
         Flux<GetCustomerDetailsResponse> customerDetails = client.get()
                 .uri("/transport-truck/customer/${newCustomerId.get()}")
                 .header("Origin", "http://any-origin.com")
-                .header("Access-Control-Request-Method", "POST")
+                .header("Access-Control-Request-Method", "GET")
                 .header("X-RequestId", "request-id")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .returnResult(GetCustomerDetailsResponse.class)
@@ -138,7 +141,7 @@ class CustomerControllerTest extends Specification {
                 })
                 .verifyComplete()
 
-        and: "Delete user"
+        cleanup: "Delete user"
         StepVerifier.create(userRepository.deleteById(newCustomerId.get()).log())
                 .verifyComplete()
     }

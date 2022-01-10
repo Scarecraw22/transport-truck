@@ -14,7 +14,6 @@ import pl.transport.truck.db.entity.UserEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.repository.UserDetailsRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
-import pl.transport.truck.db.utils.DbConsts;
 import pl.transport.truck.utils.AbstractSetCollector;
 import reactor.core.publisher.Mono;
 

@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtSupportService {
@@ -34,9 +36,12 @@ public class JwtSupportService {
             throw new IllegalStateException("JWT token cannot be null");
         }
         this.key = Keys.hmacShaKeyFor(jwtProperties.getToken().getBytes(StandardCharsets.UTF_8));
-        this.parser = Jwts.parserBuilder().setSigningKey(key).build();
-
         this.clock = clock;
+
+        this.parser = Jwts.parserBuilder().setSigningKey(key)
+                .setClock(() -> Date.from(clock.instant()))
+                .build();
+
     }
 
     public TokenBearer generate(String username) {

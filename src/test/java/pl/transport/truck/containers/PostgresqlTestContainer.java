@@ -1,13 +1,7 @@
 package pl.transport.truck.containers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.startupcheck.IndefiniteWaitOneShotStartupCheckStrategy;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
-
-import java.time.Duration;
 
 @Slf4j
 public class PostgresqlTestContainer {
