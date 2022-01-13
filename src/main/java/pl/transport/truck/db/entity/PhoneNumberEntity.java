@@ -3,6 +3,7 @@ package pl.transport.truck.db.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -10,6 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @SuperBuilder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Table("phone_number")
 public class PhoneNumberEntity extends BaseEntity {
 

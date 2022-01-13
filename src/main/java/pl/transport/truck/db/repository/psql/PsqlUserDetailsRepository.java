@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import pl.transport.truck.db.entity.BaseEntity;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 @ConditionalOnPsqlDb
 @RequiredArgsConstructor
@@ -81,17 +83,18 @@ public class PsqlUserDetailsRepository implements UserDetailsRepository {
                 if (set.isEmpty()) {
                     return UserDetailsEntity.builder().build();
                 } else {
-                    UserWithSinglePhone customerWithSinglePhone = List.copyOf(set).get(0);
+                    UserWithSinglePhone userWithSinglePhone = List.copyOf(set).get(0);
+                    log.info("Set: ##### {}", set.stream().map(UserWithSinglePhone::getPhone).collect(Collectors.toList()));
                     return UserDetailsEntity.builder()
-                            .id(customerWithSinglePhone.getId())
-                            .username(customerWithSinglePhone.getUsername())
-                            .firstName(customerWithSinglePhone.getFirstName())
-                            .lastName(customerWithSinglePhone.getLastName())
-                            .address(customerWithSinglePhone.getAddress())
-                            .email(customerWithSinglePhone.getEmail())
-                            .role(customerWithSinglePhone.getRole())
-                            .createdAt(customerWithSinglePhone.getCreatedAt())
-                            .updatedAt(customerWithSinglePhone.getUpdatedAt())
+                            .id(userWithSinglePhone.getId())
+                            .username(userWithSinglePhone.getUsername())
+                            .firstName(userWithSinglePhone.getFirstName())
+                            .lastName(userWithSinglePhone.getLastName())
+                            .address(userWithSinglePhone.getAddress())
+                            .email(userWithSinglePhone.getEmail())
+                            .role(userWithSinglePhone.getRole())
+                            .createdAt(userWithSinglePhone.getCreatedAt())
+                            .updatedAt(userWithSinglePhone.getUpdatedAt())
                             .phoneNumbers(set.stream()
                                     .map(UserWithSinglePhone::getPhone)
                                     .map(phone -> PhoneNumberEntity.builder()

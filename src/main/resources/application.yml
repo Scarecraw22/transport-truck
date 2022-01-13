@@ -24,11 +24,11 @@ spring:
 logging:
   level:
     ROOT: INFO
-  io:
-    r2dbc:
-      postgresql:
-        QUERY: DEBUG
-        PARAM: DEBUG
+    io:
+      r2dbc:
+        postgresql:
+          QUERY: DEBUG
+          PARAM: DEBUG
 
 pl:
   transport:

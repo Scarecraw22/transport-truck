@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    private final static String[] ALLOWED_PATHS = {"/transport-truck/customer", "/transport-truck/customer/login"};
+    private final static String[] ALLOWED_PATHS = {"/transport-truck/user", "/transport-truck/user/login"};
 
     @Bean
     public ReactiveUserDetailsService userDetailsService(UserRepository userRepository) {
@@ -38,7 +38,7 @@ public class SecurityConfig {
         AuthenticationWebFilter filter = new AuthenticationWebFilter(authenticationManager);
         filter.setServerAuthenticationConverter(authenticationConverter);
         filter.setAuthenticationFailureHandler((exchange, ex) -> Mono.fromRunnable(() -> {
-            log.error("Exception", ex);
+            log.error("Exception: ", ex);
             exchange.getExchange().getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             exchange.getExchange().getResponse().getHeaders().set(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
         }));

@@ -1,4 +1,4 @@
-package pl.transport.truck.rest.model.customer;
+package pl.transport.truck.rest.model.user;
 
 import lombok.Builder;
 import lombok.Value;
@@ -9,7 +9,7 @@ import java.util.Set;
 @Value
 @Builder
 @Jacksonized
-public class CreateCustomerRequest {
+public class CreateUserRequest {
 
     String username;
     String password;

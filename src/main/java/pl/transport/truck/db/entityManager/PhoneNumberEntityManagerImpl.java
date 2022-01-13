@@ -1,0 +1,33 @@
+package pl.transport.truck.db.entityManager;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import pl.transport.truck.common.ex.NotImplementedException;
+import pl.transport.truck.db.entity.PhoneNumberEntity;
+import pl.transport.truck.db.repository.PhoneNumberRepository;
+import pl.transport.truck.db.utils.EntityManager;
+import reactor.core.publisher.Mono;
+
+@Slf4j
+@EntityManager
+@RequiredArgsConstructor
+public class PhoneNumberEntityManagerImpl implements PhoneNumberEntityManager {
+
+    private final PhoneNumberRepository phoneNumberRepository;
+
+    @Override
+    public Mono<PhoneNumberEntity> getById(Long id) {
+        return phoneNumberRepository.findById(id);
+    }
+
+    @Override
+    public Mono<PhoneNumberEntity> save(PhoneNumberEntity entity) {
+        return phoneNumberRepository.save(entity)
+                .doOnNext(phoneNumberEntity -> log.info("Creating PhoneNumber: {}", entity));
+    }
+
+    @Override
+    public Mono<PhoneNumberEntity> update(PhoneNumberEntity entity) {
+        throw new NotImplementedException();
+    }
+}

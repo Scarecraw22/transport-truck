@@ -1,4 +1,4 @@
-package pl.transport.truck.rest.model.customer;
+package pl.transport.truck.rest.model.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import java.util.Set;
 @Builder
 @Jacksonized
 @AllArgsConstructor
-public class GetCustomerDetailsResponse {
+public class GetUserDetailsResponse {
 
     Long id;
     String firstName;

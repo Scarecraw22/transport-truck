@@ -73,7 +73,7 @@ public class DbConfig extends AbstractR2dbcConfiguration {
         String port = DbUtils.getPortFromUrl(url);
         log.info("Retrieved port: {}", port);
 
-        ConnectionFactory connectionFactory = new PostgresqlConnectionFactory(
+        return new PostgresqlConnectionFactory(
                 PostgresqlConnectionConfiguration.builder()
                         .port(Integer.parseInt(port))
                         .host(host)
@@ -83,12 +83,6 @@ public class DbConfig extends AbstractR2dbcConfiguration {
                         .database(r2dbcProperties.getProperties().get("database"))
                         .build()
         );
-//
-//        Mono.from(connectionFactory.create())
-//                .map(c -> c.createStatement("SET SCHEMA PUBLIC").execute())
-//                .subscribe();
-
-        return connectionFactory;
     }
 
     @Bean
