@@ -2,7 +2,6 @@ package pl.transport.truck.db.repository
 
 import org.springframework.beans.factory.annotation.Autowired
 import pl.transport.truck.db.entity.PhoneNumberEntity
-import pl.transport.truck.db.entity.UserEntity
 import pl.transport.truck.specification.RepositorySpecification
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier

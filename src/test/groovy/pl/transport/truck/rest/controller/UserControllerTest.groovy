@@ -1,7 +1,6 @@
 package pl.transport.truck.rest.controller
 
 import groovy.util.logging.Slf4j
-import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,7 +15,6 @@ import pl.transport.truck.db.repository.UserPhoneRepository
 import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
 import pl.transport.truck.initializer.RedisIntegrationTestInitializer
-import pl.transport.truck.rest.config.JwtProperties
 import pl.transport.truck.rest.model.phone.PhoneNumberDetails
 import pl.transport.truck.rest.model.user.*
 import pl.transport.truck.rest.utils.RestConsts
@@ -27,7 +25,6 @@ import spock.lang.Specification
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import java.util.stream.Collectors
 
@@ -39,29 +36,13 @@ import java.util.stream.Collectors
         initializers = [RedisIntegrationTestInitializer.class, DbIntegrationTestInitializer.class])
 class UserControllerTest extends Specification {
 
-    private static AtomicBoolean migrated = new AtomicBoolean(false)
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
-    @Autowired
-    private Flyway flyway
 
     @Autowired
     private UserRepository userRepository
 
     @Autowired
     private UserPhoneRepository userPhoneRepository
-
-    @Autowired
-    private JwtProperties jwtProperties
-
-    def setup() {
-        synchronized (this) {
-            if (!migrated.get()) {
-                migrated.set(true)
-                flyway.migrate()
-            }
-        }
-    }
 
     @Autowired
     private WebTestClient client
