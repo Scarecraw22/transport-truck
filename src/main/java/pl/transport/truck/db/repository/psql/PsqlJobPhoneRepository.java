@@ -8,9 +8,12 @@ import pl.transport.truck.db.entity.JobPhoneEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.repository.JobPhoneRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @ConditionalOnPsqlDb
@@ -43,5 +46,21 @@ public class PsqlJobPhoneRepository implements JobPhoneRepository {
                 .bind("phoneNumberId", entity.getPhoneNumberId())
                 .map(jobPhoneReadingConverter::convert)
                 .one();
+    }
+
+
+    @Override
+    public Flux<JobPhoneEntity> saveAll(Collection<JobPhoneEntity> entities) {
+        List<List<Object>> multipleValues = entities.stream()
+                .map(entity -> List.of(entity.getJobId(), (Object)entity.getPhoneNumberId()))
+                .collect(Collectors.toList());
+
+        return databaseClient.sql(queryFactory.create()
+                .insertInto(JobPhoneEntity.TABLE_NAME, List.of(JobPhoneEntity.JOB_ID, JobPhoneEntity.PHONE_NUMBER_ID))
+                .multipleValues(multipleValues)
+                .returningAll()
+                .build())
+                .map(jobPhoneReadingConverter::convert)
+                .all();
     }
 }

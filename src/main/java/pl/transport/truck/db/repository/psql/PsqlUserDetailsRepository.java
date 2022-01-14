@@ -84,7 +84,6 @@ public class PsqlUserDetailsRepository implements UserDetailsRepository {
                     return UserDetailsEntity.builder().build();
                 } else {
                     UserWithSinglePhone userWithSinglePhone = List.copyOf(set).get(0);
-                    log.info("Set: ##### {}", set.stream().map(UserWithSinglePhone::getPhone).collect(Collectors.toList()));
                     return UserDetailsEntity.builder()
                             .id(userWithSinglePhone.getId())
                             .username(userWithSinglePhone.getUsername())

@@ -216,6 +216,19 @@ public abstract class AbstractStringQueryBuilder implements StringQueryBuilder {
     }
 
     @Override
+    public StringQueryBuilder multipleValues(List<List<Object>> multipleValues) {
+        String values = multipleValues.stream()
+                .map(valueRow -> "(" + joinWithComa(valueRow) + ")")
+                .collect(Collectors.joining(StringConsts.COMMA_WITH_SPACE));
+
+        query.append(VALUES)
+                .append(StringConsts.SPACE)
+                .append(values);
+
+        return this;
+    }
+
+    @Override
     public StringQueryBuilder values(List<Object> cols) {
         if (cols == null || cols.isEmpty()) {
             throw new IllegalArgumentException("There are no columns provided");

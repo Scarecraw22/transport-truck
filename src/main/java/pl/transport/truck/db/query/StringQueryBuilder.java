@@ -56,6 +56,8 @@ public interface StringQueryBuilder {
 
     StringQueryBuilder values(Object col1, Object col2, Object col3, Object col4, Object col5, Object col6, Object col7);
 
+    StringQueryBuilder multipleValues(List<List<Object>> multipleValues);
+
     StringQueryBuilder values(List<Object> cols);
 
     StringQueryBuilder returningAll();
