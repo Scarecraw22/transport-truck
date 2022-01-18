@@ -33,10 +33,9 @@ public class PhoneNumberEntityManagerImpl implements PhoneNumberEntityManager {
 
     @Override
     public Mono<PhoneNumberEntity> getPhoneByPrefixAndNumber(String prefix, String number) {
-        return Mono.fromRunnable(() -> log.info("Trying to find PhoneNumber by prefix: {{}] and number: [{}]", prefix, number))
-                .flatMap(nothing -> phoneNumberRepository.getPhoneByPrefixAndNumber(prefix, number))
-                .doOnNext(phone -> log.info("Found PhoneNumberEntity: {}", phone))
+        log.info("Trying to find PhoneNumber by prefix: {{}] and number: [{}]", prefix, number);
+        return phoneNumberRepository.getPhoneByPrefixAndNumber(prefix, number)
+                .doOnSuccess(phone -> log.info("Found PhoneNumberEntity: {}", phone))
                 .doOnError(error -> log.error("Error while searching PhoneNumber by prefix: {{}] and number: [{}]. Exception", prefix, number, error));
-
     }
 }

@@ -30,9 +30,9 @@ public class JobEntityManagerImpl implements JobEntityManager {
 
     @Override
     public Mono<JobEntity> save(JobEntity entity) {
-        return Mono.fromRunnable(() -> log.info("Trying to create new Job: {}", entity))
-                .flatMap(nothing -> jobRepository.save(entity))
-                .doOnNext(job -> log.info("Saved job: {}", job))
+        log.info("Trying to create new Job: {}", entity);
+        return jobRepository.save(entity)
+                .doOnSuccess(job -> log.info("Saved job: {}", job))
                 .doOnError(error -> log.error("Error while trying to save new job: {}. Exception: ", entity, error));
     }
 
@@ -43,16 +43,16 @@ public class JobEntityManagerImpl implements JobEntityManager {
 
     @Override
     public Flux<JobPhoneEntity> addPhonesToJob(Collection<JobPhoneEntity> entities) {
-        return Mono.fromRunnable(() -> log.info("Trying to add phones to job by saving entities: {}", entities))
-                .flatMapMany(nothing -> jobPhoneRepository.saveAll(entities))
+        log.info("Trying to add phones to job by saving entities: {}", entities);
+        return jobPhoneRepository.saveAll(entities)
                 .doOnNext(jobPhone -> log.info("Linked phone with id: [{}] to job with id: [{}]", jobPhone.getPhoneNumberId(), jobPhone.getJobId()))
                 .doOnError(error -> log.error("Error while saving entities: {}. Exception: ", entities, error));
     }
 
     @Override
     public Mono<JobPhoneEntity> addPhoneToJob(JobPhoneEntity entity) {
-        return Mono.fromRunnable(() -> log.info("trying to add phone to job by saving entity: {}", entity))
-                .flatMap(nothing -> jobPhoneRepository.save(entity))
+        log.info("Trying to add phone to job by saving entity: {}", entity);
+        return jobPhoneRepository.save(entity)
                 .doOnNext(jobPhone -> log.info("Linked phone with id: [{}] to job with id: [{}]", jobPhone.getPhoneNumberId(), jobPhone.getJobId()))
                 .doOnError(error -> log.error("Error while saving entity: {}. Exception: ", entity, error));
     }

@@ -17,7 +17,7 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping
-    public Mono<ResponseEntity<CreateJobResponse>> createCustomer(@RequestBody CreateJobRequest request) {
+    public Mono<ResponseEntity<CreateJobResponse>> createJob(@RequestBody CreateJobRequest request) {
         return jobService.createJob(request)
                 .map(ResponseEntity::ok);
     }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.transport.truck.converter.JobModelConverter;
+import pl.transport.truck.db.entity.JobEntity;
 import pl.transport.truck.db.entity.JobPhoneEntity;
 import pl.transport.truck.db.entity.PhoneNumberEntity;
 import pl.transport.truck.db.entityManager.JobEntityManager;
@@ -13,6 +14,8 @@ import pl.transport.truck.rest.model.job.CreateJobResponse;
 import pl.transport.truck.service.common.EntityTimestampService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,6 +31,7 @@ public class JobServiceImpl implements JobService {
     public Mono<CreateJobResponse> createJob(CreateJobRequest request) {
         return Mono.just(request)
                 .map(jobModelConverter::convertToJobEntity)
+                .map(this::prepareJobEntity)
                 .flatMap(jobEntityManager::save)
                 .flatMap(newJob -> {
                     return Flux.fromIterable(request.getJobPhones())
@@ -39,10 +43,16 @@ public class JobServiceImpl implements JobService {
                                     .jobId(newJob.getId())
                                     .phoneNumberId(phoneNumberEntity.getId())
                                     .build()))
-                            .then()
-                            .map(nothing -> newJob.getId());
+                            .collectList()
+                            .map(list -> newJob.getId());
                 })
                 .map(CreateJobResponse::fromJobId);
+    }
+
+    private JobEntity prepareJobEntity(JobEntity entity) {
+        entityTimestampService.setupDatesForNewEntity(entity);
+
+        return entity;
     }
 
     private PhoneNumberEntity convertToPhoneNumberEntity(CreateJobRequest.PhoneNumber phone) {
