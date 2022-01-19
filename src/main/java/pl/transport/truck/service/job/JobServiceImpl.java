@@ -11,11 +11,10 @@ import pl.transport.truck.db.entityManager.JobEntityManager;
 import pl.transport.truck.db.entityManager.PhoneNumberEntityManager;
 import pl.transport.truck.rest.model.job.CreateJobRequest;
 import pl.transport.truck.rest.model.job.CreateJobResponse;
+import pl.transport.truck.rest.model.job.GetJobDetailsResponse;
 import pl.transport.truck.service.common.EntityTimestampService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -63,5 +62,11 @@ public class JobServiceImpl implements JobService {
         entityTimestampService.setupDatesForNewEntity(entity);
 
         return entity;
+    }
+
+    @Override
+    public Mono<GetJobDetailsResponse> getJobDetails(Long jobId) {
+        return jobEntityManager.getJobDetails(jobId)
+                .map(jobModelConverter::convertToJobDetailsResponse);
     }
 }

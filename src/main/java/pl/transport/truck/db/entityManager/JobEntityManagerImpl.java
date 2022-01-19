@@ -3,8 +3,10 @@ package pl.transport.truck.db.entityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pl.transport.truck.common.ex.NotImplementedException;
+import pl.transport.truck.db.entity.JobDetailsEntity;
 import pl.transport.truck.db.entity.JobEntity;
 import pl.transport.truck.db.entity.JobPhoneEntity;
+import pl.transport.truck.db.repository.JobDetailsRepository;
 import pl.transport.truck.db.repository.JobPhoneRepository;
 import pl.transport.truck.db.repository.JobRepository;
 import pl.transport.truck.db.utils.EntityManager;
@@ -19,6 +21,7 @@ import java.util.Collection;
 public class JobEntityManagerImpl implements JobEntityManager {
 
     private final JobRepository jobRepository;
+    private final JobDetailsRepository jobDetailsRepository;
     private final JobPhoneRepository jobPhoneRepository;
 
     @Override
@@ -55,5 +58,13 @@ public class JobEntityManagerImpl implements JobEntityManager {
         return jobPhoneRepository.save(entity)
                 .doOnNext(jobPhone -> log.info("Linked phone with id: [{}] to job with id: [{}]", jobPhone.getPhoneNumberId(), jobPhone.getJobId()))
                 .doOnError(error -> log.error("Error while saving entity: {}. Exception: ", entity, error));
+    }
+
+    @Override
+    public Mono<JobDetailsEntity> getJobDetails(Long jobId) {
+        log.info("Trying to get JobDetails with id: {}", jobId);
+        return jobDetailsRepository.getJobDetails(jobId)
+                .doOnSuccess(jobDetails -> log.info("Successfully found JobDetails with id: {}", jobDetails.getId()))
+                .doOnError(error -> log.error("Error while trying to get JobDetails with id: {}. Exception: ", jobId, error));
     }
 }
