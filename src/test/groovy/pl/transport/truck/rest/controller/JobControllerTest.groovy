@@ -2,17 +2,12 @@ package pl.transport.truck.rest.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import pl.transport.truck.db.repository.JobPhoneRepository
 import pl.transport.truck.rest.model.job.CreateJobRequest
-import pl.transport.truck.rest.model.job.CreateJobResponse
+import pl.transport.truck.rest.model.job.GetJobDetailsResponse
 import pl.transport.truck.rest.model.user.CreateUserRequest
-import pl.transport.truck.rest.utils.RestConsts
-import pl.transport.truck.utils.StringConsts
 import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
-
-import java.util.concurrent.atomic.AtomicLong
 
 class JobControllerTest extends AbstractControllerTest {
 
@@ -20,7 +15,7 @@ class JobControllerTest extends AbstractControllerTest {
     private JobPhoneRepository jobPhoneRepository
 
     def "test if Job is properly created when given phone doesn't exist"() {
-        given:
+        given: "new user is created and logged"
         CreateUserRequest request = CreateUserRequest.builder()
                 .username("u1")
                 .firstName("f1")
@@ -44,7 +39,7 @@ class JobControllerTest extends AbstractControllerTest {
         Long userId = createUser(request)
         String token = loginUser("u1", "password")
 
-        when:
+        when: "new job is created"
         CreateJobRequest createJobRequest = CreateJobRequest.builder()
                 .customerId(userId)
                 .title("title")
@@ -60,30 +55,39 @@ class JobControllerTest extends AbstractControllerTest {
                 ))
                 .build()
 
-        Flux<CreateJobResponse> createJobResponse = client.post()
-                .uri("/transport-truck/job")
+        Long newJobId = createJob(createJobRequest, token)
+
+        then: "job details are properly returned"
+        Flux<GetJobDetailsResponse> jobDetails = client.get()
+                .uri("/transport-truck/job/${newJobId}")
                 .header("Origin", "http://any-origin.com")
-                .header("Access-Control-Request-Method", "POST")
-                .header("X-RequestId", UUID.randomUUID().toString())
+                .header("Access-Control-Request-Method", "GET")
+                .header("X-RequestId", "request-id")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
-                .bodyValue(createJobRequest)
-                .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().is2xxSuccessful()
-                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, String.join(StringConsts.COMMA_WITH_SPACE, RestConsts.ALLOWED_HTTP_METHODS))
-                .returnResult(CreateJobResponse.class)
+                .returnResult(GetJobDetailsResponse.class)
                 .getResponseBody()
 
-        then:
-        AtomicLong newJobId = new AtomicLong()
-        StepVerifier.create(createJobResponse.log())
-                .consumeNextWith(next -> {
-                    newJobId.set(next.getJobId())
-                    assert next.getJobId() > 0
+        StepVerifier.create(jobDetails.log())
+                .assertNext(next -> {
+                    assert next.getId() == newJobId
+                    assert next.getTitle() == "title"
+                    assert next.getDescription() == "description"
+                    assert next.getSourceAddress() == "sa1"
+                    assert next.getDestinationAddress() == "da1"
+                    assert next.getDestinationEmail() == "de1"
+                    next.getPhones().forEach(phone -> {
+                        assert phone.getNumber() == "123456789"
+                        assert phone.getPrefix() == "48"
+                    })
+                    assert next.getCustomer().getId() == userId
+                    assert next.getCustomer().getUsername() == "u1"
+                    assert next.getCustomer().getFirstName() == "f1"
+                    assert next.getCustomer().getLastName() == "l1"
+                    assert next.getCustomer().getEmail() == "e1"
+                    assert next.getCustomer().getRole() == "CUSTOMER"
+                    assert next.getCustomer().getAddress() == "a1"
                 })
-                .verifyComplete()
-
-        // TODO add JobDetails endpoint and get details about the job and check if phone numbers are properly saved
     }
 }

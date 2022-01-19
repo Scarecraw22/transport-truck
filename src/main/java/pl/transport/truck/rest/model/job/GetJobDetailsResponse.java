@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Value
@@ -11,11 +12,14 @@ import java.util.Set;
 @Jacksonized
 public class GetJobDetailsResponse {
 
+    Long id;
     String title;
     String description;
     String sourceAddress;
     String destinationAddress;
     String destinationEmail;
+    ZonedDateTime createdAt;
+    ZonedDateTime updatedAt;
     User customer;
     Set<Phone> phones;
 
@@ -24,10 +28,12 @@ public class GetJobDetailsResponse {
     @Jacksonized
     public static class User {
         Long id;
+        String username;
         String firstName;
         String lastName;
         String address;
         String email;
+        String role;
     }
 
     @Value

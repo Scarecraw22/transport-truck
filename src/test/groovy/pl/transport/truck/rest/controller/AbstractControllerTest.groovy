@@ -14,6 +14,8 @@ import pl.transport.truck.db.repository.UserPhoneRepository
 import pl.transport.truck.db.repository.UserRepository
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
 import pl.transport.truck.initializer.RedisIntegrationTestInitializer
+import pl.transport.truck.rest.model.job.CreateJobRequest
+import pl.transport.truck.rest.model.job.CreateJobResponse
 import pl.transport.truck.rest.model.user.CreateUserRequest
 import pl.transport.truck.rest.model.user.CreateUserResponse
 import pl.transport.truck.rest.model.user.LoginUserRequest
@@ -102,5 +104,32 @@ abstract class AbstractControllerTest extends Specification {
                 .verifyComplete()
 
         return token
+    }
+
+    protected Long createJob(CreateJobRequest request, String token) {
+        Flux<CreateJobResponse> createJobResponse = client.post()
+                .uri("/transport-truck/job")
+                .header("Origin", "http://any-origin.com")
+                .header("Access-Control-Request-Method", "POST")
+                .header("X-RequestId", UUID.randomUUID().toString())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
+                .bodyValue(request)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                .expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, String.join(StringConsts.COMMA_WITH_SPACE, RestConsts.ALLOWED_HTTP_METHODS))
+                .returnResult(CreateJobResponse.class)
+                .getResponseBody()
+
+        AtomicLong newJobId = new AtomicLong()
+        StepVerifier.create(createJobResponse.log())
+                .consumeNextWith(next -> {
+                    newJobId.set(next.getJobId())
+                    assert next.getJobId() > 0
+                })
+                .verifyComplete()
+
+        return newJobId.get()
     }
 }

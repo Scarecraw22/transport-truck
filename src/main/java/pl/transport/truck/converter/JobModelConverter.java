@@ -1,6 +1,8 @@
 package pl.transport.truck.converter;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import pl.transport.truck.db.entity.JobDetailsEntity;
 import pl.transport.truck.db.entity.JobEntity;
 import pl.transport.truck.db.entity.PhoneNumberEntity;
@@ -19,6 +21,10 @@ public interface JobModelConverter {
 
     GetJobDetailsResponse.User convertToJobDetailsUser(UserEntity entity);
 
+    @Mappings({
+            @Mapping(source = "phonePrefix", target = "prefix"),
+            @Mapping(source = "phoneNumber", target = "number")
+    })
     GetJobDetailsResponse.Phone convertToJobDetailsPhone(PhoneNumberEntity entity);
 
     Set<GetJobDetailsResponse.Phone> convertToJobDetailsPhones(Set<PhoneNumberEntity> entities);
