@@ -3,9 +3,10 @@ package pl.transport.truck.rest.controller
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import pl.transport.truck.db.entity.UserPhoneEntity
 import pl.transport.truck.rest.model.phone.PhoneNumberDetails
-import pl.transport.truck.rest.model.user.*
+import pl.transport.truck.rest.model.user.CreateUserRequest
+import pl.transport.truck.rest.model.user.CreateUserResponse
+import pl.transport.truck.rest.model.user.GetUserDetailsResponse
 import pl.transport.truck.rest.utils.RestConsts
 import pl.transport.truck.utils.StringConsts
 import reactor.core.publisher.Flux
@@ -13,7 +14,6 @@ import reactor.test.StepVerifier
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.stream.Collectors
 
 @Slf4j
 class UserControllerTest extends AbstractControllerTest {
@@ -70,19 +70,7 @@ class UserControllerTest extends AbstractControllerTest {
                 .verifyComplete()
 
         cleanup: "Delete user"
-        List<UserPhoneEntity> phonesToDelete = phones.stream()
-                .map(phone -> UserPhoneEntity.builder()
-                        .userId(newUserId)
-                        .phoneNumberId(phone.getId())
-                        .build())
-                .collect(Collectors.toList())
-
-        Flux.fromIterable(phonesToDelete).log()
-                .map(phone -> userPhoneRepository.delete(phone).toFuture().get())
-                .subscribe()
-
-        StepVerifier.create(userRepository.deleteById(newUserId).log())
-                .verifyComplete()
+        testRepositoryUtils.deleteUserById(newUserId)
     }
 
     // Test for checking if each request has proper logs and MDC data is not shuffled

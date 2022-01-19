@@ -52,14 +52,26 @@ public class PsqlJobPhoneRepository implements JobPhoneRepository {
     @Override
     public Flux<JobPhoneEntity> saveAll(Collection<JobPhoneEntity> entities) {
         List<List<Object>> multipleValues = entities.stream()
-                .map(entity -> List.of(entity.getJobId(), (Object)entity.getPhoneNumberId()))
+                .map(entity -> List.of(entity.getJobId(), (Object) entity.getPhoneNumberId()))
                 .collect(Collectors.toList());
 
         return databaseClient.sql(queryFactory.create()
-                .insertInto(JobPhoneEntity.TABLE_NAME, List.of(JobPhoneEntity.JOB_ID, JobPhoneEntity.PHONE_NUMBER_ID))
-                .multipleValues(multipleValues)
-                .returningAll()
-                .build())
+                        .insertInto(JobPhoneEntity.TABLE_NAME, List.of(JobPhoneEntity.JOB_ID, JobPhoneEntity.PHONE_NUMBER_ID))
+                        .multipleValues(multipleValues)
+                        .returningAll()
+                        .build())
+                .map(jobPhoneReadingConverter::convert)
+                .all();
+    }
+
+    @Override
+    public Flux<JobPhoneEntity> getByJobId(Long jobId) {
+        return databaseClient.sql(queryFactory.create()
+                        .select(JobPhoneEntity.JOB_ID, JobPhoneEntity.PHONE_NUMBER_ID)
+                        .from(JobPhoneEntity.TABLE_NAME)
+                        .where("job_id = :jobId")
+                        .build())
+                .bind("jobId", jobId)
                 .map(jobPhoneReadingConverter::convert)
                 .all();
     }

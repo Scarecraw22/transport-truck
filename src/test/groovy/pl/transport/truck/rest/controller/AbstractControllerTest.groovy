@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
-import pl.transport.truck.db.repository.UserPhoneRepository
-import pl.transport.truck.db.repository.UserRepository
+import pl.transport.truck.db.repository.*
 import pl.transport.truck.initializer.DbIntegrationTestInitializer
 import pl.transport.truck.initializer.RedisIntegrationTestInitializer
 import pl.transport.truck.rest.model.job.CreateJobRequest
@@ -22,6 +21,7 @@ import pl.transport.truck.rest.model.user.LoginUserRequest
 import pl.transport.truck.rest.model.user.LoginUserResponse
 import pl.transport.truck.rest.utils.RestConsts
 import pl.transport.truck.utils.StringConsts
+import pl.transport.truck.utils.TestRepositoryUtils
 import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
 import spock.lang.Specification
@@ -37,10 +37,22 @@ import java.util.concurrent.atomic.AtomicLong
 abstract class AbstractControllerTest extends Specification {
 
     @Autowired
+    protected TestRepositoryUtils testRepositoryUtils
+
+    @Autowired
     protected UserRepository userRepository
 
     @Autowired
     protected UserPhoneRepository userPhoneRepository
+
+    @Autowired
+    protected JobPhoneRepository jobPhoneRepository
+
+    @Autowired
+    protected PhoneNumberRepository phoneNumberRepository
+
+    @Autowired
+    protected JobRepository jobRepository
 
     @Autowired
     protected WebTestClient client
@@ -131,5 +143,49 @@ abstract class AbstractControllerTest extends Specification {
                 .verifyComplete()
 
         return newJobId.get()
+    }
+
+    protected void deleteUserById(Long userId) {
+        List<Long> phonesToDelete = unlinkPhonesFromUser(userId)
+        Flux<Void> flux = Flux.fromIterable(phonesToDelete)
+                .flatMap(id -> phoneNumberRepository.deleteById(id))
+                .log()
+
+        StepVerifier.create(flux)
+                .verifyComplete()
+
+        StepVerifier.create(userRepository.deleteById(userId).log())
+                .verifyComplete()
+    }
+
+    protected List<Long> unlinkPhonesFromUser(Long userId) {
+        return userPhoneRepository.getByUserId(userId)
+                .flatMap(userPhone -> userPhoneRepository.delete(userPhone))
+                .map(userPhone -> userPhone.getPhoneNumberId())
+                .collectList()
+                .toFuture()
+                .get()
+    }
+
+    protected List<Long> unlinkPhonesFromJob(Long jobId) {
+        return jobPhoneRepository.getByJobId(jobId)
+                .flatMap(jobPhone -> jobPhoneRepository.delete(jobPhone))
+                .map(jobPhone -> jobPhone.getPhoneNumberId())
+                .collectList()
+                .toFuture()
+                .get()
+    }
+
+    protected void deleteJobById(Long jobId) {
+        List<Long> phonesToDelete = unlinkPhonesFromJob(jobId)
+        Flux<Void> flux = Flux.fromIterable(phonesToDelete)
+                .flatMap(id -> phoneNumberRepository.deleteById(id))
+                .log()
+
+        StepVerifier.create(flux)
+                .verifyComplete()
+
+        StepVerifier.create(jobRepository.deleteById(jobId).log())
+                .verifyComplete()
     }
 }

@@ -1,8 +1,7 @@
 package pl.transport.truck.rest.controller
 
-import org.springframework.beans.factory.annotation.Autowired
+
 import org.springframework.http.HttpHeaders
-import pl.transport.truck.db.repository.JobPhoneRepository
 import pl.transport.truck.rest.model.job.CreateJobRequest
 import pl.transport.truck.rest.model.job.GetJobDetailsResponse
 import pl.transport.truck.rest.model.user.CreateUserRequest
@@ -10,9 +9,6 @@ import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
 
 class JobControllerTest extends AbstractControllerTest {
-
-    @Autowired
-    private JobPhoneRepository jobPhoneRepository
 
     def "test if Job is properly created when given phone doesn't exist"() {
         given: "new user is created and logged"
@@ -69,6 +65,7 @@ class JobControllerTest extends AbstractControllerTest {
                 .returnResult(GetJobDetailsResponse.class)
                 .getResponseBody()
 
+        Set<GetJobDetailsResponse.Phone> phonesSetToDelete = new HashSet<>()
         StepVerifier.create(jobDetails.log())
                 .assertNext(next -> {
                     assert next.getId() == newJobId
@@ -78,6 +75,7 @@ class JobControllerTest extends AbstractControllerTest {
                     assert next.getDestinationAddress() == "da1"
                     assert next.getDestinationEmail() == "de1"
                     next.getPhones().forEach(phone -> {
+                        phonesSetToDelete.add(phone)
                         assert phone.getNumber() == "123456789"
                         assert phone.getPrefix() == "48"
                     })
@@ -89,5 +87,9 @@ class JobControllerTest extends AbstractControllerTest {
                     assert next.getCustomer().getRole() == "CUSTOMER"
                     assert next.getCustomer().getAddress() == "a1"
                 })
+
+        cleanup:
+        testRepositoryUtils.deleteJobById(newJobId)
+        testRepositoryUtils.deleteUserById(userId)
     }
 }

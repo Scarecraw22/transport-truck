@@ -97,14 +97,6 @@ class PsqlUserDetailsRepositoryTest extends RepositorySpecification {
                 .verifyComplete()
 
         cleanup:
-        StepVerifier.create(userPhoneRepository.delete(userPhoneEntity).log())
-                .expectNextCount(1)
-                .verifyComplete()
-        StepVerifier.create(phoneNumberRepository.deleteById(phoneNumberId.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
-        StepVerifier.create(userRepository.deleteById(userId.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
+        testRepositoryUtils.deleteUserById(userId.get())
     }
 }

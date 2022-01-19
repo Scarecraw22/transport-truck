@@ -126,17 +126,7 @@ class PsqlJobDetailsRepositoryTest extends RepositorySpecification {
                 .verifyComplete()
 
         cleanup:
-        StepVerifier.create(jobPhoneRepository.delete(jobPhoneEntity).log())
-                .expectNextCount(1)
-                .verifyComplete()
-        StepVerifier.create(phoneNumberRepository.deleteById(phoneNumberId.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
-        StepVerifier.create(jobRepository.deleteById(jobId.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
-        StepVerifier.create(userRepository.deleteById(userId.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
+        testRepositoryUtils.deleteJobById(jobEntity.getId())
+        testRepositoryUtils.deleteUserById(userId.get())
     }
 }

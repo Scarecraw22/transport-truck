@@ -8,6 +8,7 @@ import pl.transport.truck.db.entity.UserPhoneEntity;
 import pl.transport.truck.db.query.StringQueryBuilderFactory;
 import pl.transport.truck.db.repository.UserPhoneRepository;
 import pl.transport.truck.db.utils.ConditionalOnPsqlDb;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -43,5 +44,17 @@ public class PsqlUserPhoneRepository implements UserPhoneRepository {
                 .bind("phoneNumberId", entity.getPhoneNumberId())
                 .map(userPhoneReadingConverter::convert)
                 .one();
+    }
+
+    @Override
+    public Flux<UserPhoneEntity> getByUserId(Long userId) {
+        return databaseClient.sql(queryFactory.create()
+                        .select(UserPhoneEntity.USER_ID, UserPhoneEntity.PHONE_NUMBER_ID)
+                        .from(UserPhoneEntity.TABLE_NAME)
+                        .where("user_id = :userId")
+                        .build())
+                .bind("userId", userId)
+                .map(userPhoneReadingConverter::convert)
+                .all();
     }
 }

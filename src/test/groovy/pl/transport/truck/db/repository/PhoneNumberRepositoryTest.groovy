@@ -45,8 +45,6 @@ class PhoneNumberRepositoryTest extends RepositorySpecification {
                 })
 
         cleanup:
-        StepVerifier.create(phoneNumberRepository.deleteById(id.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
+        testRepositoryUtils.deletePhoneNumberById(id.get())
     }
 }

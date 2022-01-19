@@ -58,8 +58,6 @@ class UserRepositoryTest extends RepositorySpecification {
                 })
 
         cleanup:
-        StepVerifier.create(userRepository.deleteById(id.get()).log())
-                .expectNextCount(0)
-                .verifyComplete()
+        testRepositoryUtils.deleteUserById(id.get())
     }
 }

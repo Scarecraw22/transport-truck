@@ -90,7 +90,7 @@ public abstract class AbstractStringQueryBuilder implements StringQueryBuilder {
 
     @Override
     public StringQueryBuilder from(String table) {
-        return from(null, table);
+        return from(table, null);
     }
 
     @Override
